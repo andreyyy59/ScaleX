@@ -41,7 +41,7 @@ fun NavigationGraph(
                     }
                 },
                 onNavigateToLogin = {
-                    navController.popBackStack()
+                    navController.popBackStack()  // Regresa al login
                 }
             )
         }

@@ -1,4 +1,4 @@
-package me.proyecto.scalex.ui.screens.register
+    package me.proyecto.scalex.ui.screens.register
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,7 +21,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,125 +31,190 @@ import me.proyecto.scalex.ui.theme.BrightRed
 import me.proyecto.scalex.ui.theme.DarkBrown
 import me.proyecto.scalex.ui.theme.White
 
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun RegisterScreenPreview() {
-    ScaleXTheme {
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.background_login),
-                contentDescription = "Background",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+fun RegisterScreen(
+    onRegisterSuccess: () -> Unit,
+    onNavigateToLogin: () -> Unit = {}
+) {
+    val viewModel: RegisterViewModel = viewModel()
+    val state by viewModel.state.collectAsState()
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Black.copy(alpha = 0.7f),
-                                Color.Black.copy(alpha = 0.85f)
-                            )
+    LaunchedEffect(state.isRegisterSuccessful) {
+        if (state.isRegisterSuccessful) {
+            onRegisterSuccess()
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // Imagen de fondo
+        Image(
+            painter = painterResource(id = R.drawable.background_login),
+            contentDescription = "Background",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        // Overlay oscuro
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 0.7f),
+                            Color.Black.copy(alpha = 0.85f)
                         )
                     )
+                )
+        )
+
+        // Contenido
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(40.dp))
+
+            // Logo
+            Image(
+                painter = painterResource(id = R.drawable.logo_scalex),
+                contentDescription = "ScaleX Logo",
+                modifier = Modifier
+                    .fillMaxWidth(0.85f)
+                    .height(180.dp),
+                contentScale = ContentScale.Fit
             )
 
-            Column(
+            Spacer(modifier = Modifier.height(30.dp))
+
+            // Título "REGISTRO"
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxWidth()
+                    .background(DarkBrown)
+                    .padding(vertical = 16.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Spacer(modifier = Modifier.height(40.dp))
-
-                Image(
-                    painter = painterResource(id = R.drawable.logo_scalex),
-                    contentDescription = "ScaleX Logo",
-                    modifier = Modifier
-                        .fillMaxWidth(0.85f)
-                        .height(180.dp),
-                    contentScale = ContentScale.Fit
+                Text(
+                    text = "REGISTRO",
+                    color = White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
                 )
+            }
 
-                Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(DarkBrown)
-                        .padding(vertical = 16.dp),
-                    contentAlignment = Alignment.Center
+            // Campo de Email
+            CustomTextField(
+                value = state.email,
+                onValueChange = { viewModel.onEvent(RegisterEvent.EmailChanged(it)) },
+                label = "CORREO ELECTRONICO",
+                isError = !state.isEmailValid && state.email.isNotEmpty(),
+                errorMessage = "Correo electrónico inválido",
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Campo de Nombre de Usuario
+            CustomTextField(
+                value = state.username,
+                onValueChange = { viewModel.onEvent(RegisterEvent.UsernameChanged(it)) },
+                label = "NOMBRE DE USUARIO",
+                isError = !state.isUsernameValid && state.username.isNotEmpty(),
+                errorMessage = "El nombre de usuario es requerido",
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Campo de Contraseña
+            CustomTextField(
+                value = state.password,
+                onValueChange = { viewModel.onEvent(RegisterEvent.PasswordChanged(it)) },
+                label = "CONTRASEÑA",
+                isPassword = true,
+                isError = !state.isPasswordValid && state.password.isNotEmpty(),
+                errorMessage = "La contraseña debe tener al menos 6 caracteres",
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Campo de Confirmar Contraseña
+            CustomTextField(
+                value = state.confirmPassword,
+                onValueChange = { viewModel.onEvent(RegisterEvent.ConfirmPasswordChanged(it)) },
+                label = "CONFIRMAR CONTRASEÑA",
+                isPassword = true,
+                isError = !state.isConfirmPasswordValid && state.confirmPassword.isNotEmpty(),
+                errorMessage = "Las contraseñas no coinciden",
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done,
+                onImeAction = { viewModel.onEvent(RegisterEvent.Register) }
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Botón de Registro
+            CustomButton(
+                text = "REGISTRARSE",
+                onClick = { viewModel.onEvent(RegisterEvent.Register) },
+                enabled = !state.isLoading
+            )
+
+            // Indicador de carga
+            if (state.isLoading) {
+                Spacer(modifier = Modifier.height(20.dp))
+                CircularProgressIndicator(
+                    color = BrightRed,
+                    modifier = Modifier.size(40.dp)
+                )
+            }
+
+            // Mensaje de error
+            state.error?.let { error ->
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = error,
+                    color = Color.Red,
+                    fontSize = 14.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Botón para volver al login
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "¿Ya tienes cuenta?",
+                    color = White.copy(alpha = 0.7f),
+                    fontSize = 14.sp
+                )
+                TextButton(
+                    onClick = onNavigateToLogin
                 ) {
                     Text(
-                        text = "REGISTRO",
-                        color = White,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 2.sp
+                        text = "Inicia Sesión",
+                        color = BrightRed,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
                     )
                 }
-
-                Spacer(modifier = Modifier.height(28.dp))
-
-                CustomTextField(
-                    value = "usuario@email.com",
-                    onValueChange = {},
-                    label = "CORREO ELECTRONICO",
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                CustomTextField(
-                    value = "usuario123",
-                    onValueChange = {},
-                    label = "NOMBRE DE USUARIO",
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                CustomTextField(
-                    value = "contraseña123",
-                    onValueChange = {},
-                    label = "CONTRASEÑA",
-                    isPassword = true,
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Next
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                CustomTextField(
-                    value = "contraseña123",
-                    onValueChange = {},
-                    label = "CONFIRMAR CONTRASEÑA",
-                    isPassword = true,
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
-                )
-
-                Spacer(modifier = Modifier.height(28.dp))
-
-                CustomButton(
-                    text = "REGISTRARSE",
-                    onClick = {}
-                )
-
-                Spacer(modifier = Modifier.height(40.dp))
             }
+
+            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }
-
-@Composable
-fun ScaleXTheme(content: @Composable () -> Unit) {
-    TODO("Not yet implemented")
-}
-
