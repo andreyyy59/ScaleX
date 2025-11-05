@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import me.proyecto.scalex.ui.screens.home.HomeScreen
 import me.proyecto.scalex.ui.screens.login.LoginScreen
+import me.proyecto.scalex.ui.screens.register.RegisterScreen
 
 @Composable
 fun NavigationGraph(
@@ -19,11 +20,28 @@ fun NavigationGraph(
             LoginScreen(
                 onLoginSuccess = {
                     navController.navigate(Screen.Home.route) {
-                        // Eliminar el login del back stack
                         popUpTo(Screen.Login.route) {
                             inclusive = true
                         }
                     }
+                },
+                onNavigateToRegister = {
+                    navController.navigate(Screen.Register.route)
+                }
+            )
+        }
+
+        composable(route = Screen.Register.route) {
+            RegisterScreen(
+                onRegisterSuccess = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Register.route) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onNavigateToLogin = {
+                    navController.popBackStack()
                 }
             )
         }
