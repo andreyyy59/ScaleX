@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "435226884480",
+    "project_id": "loginscalex",
+    "storage_bucket": "loginscalex.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:435226884480:android:240b15fc098f753554e965",
+        "android_client_info": {
+          "package_name": "me.proyecto.scalex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-6Hs_egu2XPeYwSzQwfR9uAkzT9sol0g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
