@@ -54,6 +54,15 @@ fun NavigationGraph(
                             inclusive = true
                         }
                     }
+                },
+                onNavigateToCompare = {
+                    // TODO: navegar a pantalla de comparación
+                },
+                onNavigateToFavorites = {
+                    // TODO: navegar a pantalla de favoritos
+                },
+                onNavigateToSearch = {
+                    // TODO: navegar a pantalla de búsqueda
                 }
             )
         }
