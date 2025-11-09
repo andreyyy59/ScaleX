@@ -2,7 +2,7 @@ package me.proyecto.scalex.ui.screens.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RegisterViewModel : ViewModel() {
+
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     private val _state = MutableStateFlow(RegisterState())
     val state: StateFlow<RegisterState> = _state.asStateFlow()
@@ -54,15 +56,14 @@ class RegisterViewModel : ViewModel() {
                 }
             }
             is RegisterEvent.Register -> {
-                register()
+                registerUser()
             }
         }
     }
 
-    private fun register() {
+    private fun registerUser() {
         val currentState = _state.value
 
-        // Validaciones
         val isEmailValid = validateEmail(currentState.email)
         val isUsernameValid = currentState.username.length >= 3
         val isPasswordValid = currentState.password.length >= 6
@@ -77,33 +78,39 @@ class RegisterViewModel : ViewModel() {
             )
         }
 
-        if (!isEmailValid || !isUsernameValid || !isPasswordValid || !isConfirmPasswordValid) {
-            return
-        }
+        if (!isEmailValid || !isUsernameValid || !isPasswordValid || !isConfirmPasswordValid) return
 
-        // Simular registro
+        // 🔥 Registro real con Firebase
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
-            try {
-                // Aquí irá tu lógica de registro con Firebase
-                delay(2000) // Simular llamada a API
+            auth.createUserWithEmailAndPassword(currentState.email, currentState.password)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        // Opcional: actualizar el nombre de usuario
+                        val user = auth.currentUser
+                        user?.let {
+                            val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
+                                .setDisplayName(currentState.username)
+                                .build()
+                            it.updateProfile(profileUpdates)
+                        }
 
-                // Registro exitoso
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        isRegisterSuccessful = true
-                    )
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                isRegisterSuccessful = true
+                            )
+                        }
+                    } else {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                error = task.exception?.message ?: "Error al registrar usuario"
+                            )
+                        }
+                    }
                 }
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        error = e.message ?: "Error desconocido"
-                    )
-                }
-            }
         }
     }
 
@@ -112,6 +119,7 @@ class RegisterViewModel : ViewModel() {
     }
 }
 
+// Eventos del registro
 sealed class RegisterEvent {
     data class EmailChanged(val email: String) : RegisterEvent()
     data class UsernameChanged(val username: String) : RegisterEvent()

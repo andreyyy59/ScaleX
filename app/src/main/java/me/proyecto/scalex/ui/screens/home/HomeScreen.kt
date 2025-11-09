@@ -4,6 +4,7 @@ package me.proyecto.scalex.ui.screens.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -90,7 +91,9 @@ fun HomeScreen(
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize()
+                        .border(width = 2.dp,
+                            color = Color.White),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
