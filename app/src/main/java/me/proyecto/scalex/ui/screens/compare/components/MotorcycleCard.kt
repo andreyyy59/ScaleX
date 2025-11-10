@@ -53,23 +53,42 @@ fun MotorcycleCard(
                         .padding(12.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Color indicator
+                    // Color indicator y botón de favorito en misma fila
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .background(color, RoundedCornerShape(4.dp))
-                                .border(1.dp, White, RoundedCornerShape(4.dp))
-                        )
-                        Text(
-                            text = colorName.uppercase(),
-                            color = White,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        // Color indicator
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .background(color, RoundedCornerShape(4.dp))
+                                    .border(1.dp, White, RoundedCornerShape(4.dp))
+                            )
+                            Text(
+                                text = colorName.uppercase(),
+                                color = White,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        // Botón de favorito
+                        IconButton(
+                            onClick = onToggleFavorite,
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                contentDescription = "Favorito",
+                                tint = if (isFavorite) BrightRed else White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
                     }
 
                     // Nombre de la moto
@@ -99,38 +118,20 @@ fun MotorcycleCard(
                     }
                 }
 
-                // Botones de acción (esquina superior derecha)
-                Row(
+                // Botón de eliminar (esquina superior derecha)
+                IconButton(
+                    onClick = onRemove,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        .size(32.dp)
+                        .padding(4.dp)
                 ) {
-                    // Botón de favorito
-                    IconButton(
-                        onClick = onToggleFavorite,
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = "Favorito",
-                            tint = if (isFavorite) BrightRed else White,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-
-                    // Botón de eliminar
-                    IconButton(
-                        onClick = onRemove,
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Eliminar",
-                            tint = White,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Eliminar",
+                        tint = White,
+                        modifier = Modifier.size(18.dp)
+                    )
                 }
             }
         } else {
