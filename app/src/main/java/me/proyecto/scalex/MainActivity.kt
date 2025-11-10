@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import me.proyecto.scalex.di.ViewModelFactory
 import me.proyecto.scalex.ui.navigation.NavigationGraph
 import me.proyecto.scalex.ui.screens.session.SessionViewModel
 import me.proyecto.scalex.ui.theme.ScaleXTheme
@@ -34,6 +35,9 @@ class MainActivity : ComponentActivity() {
                     LaunchedEffect(Unit) {
                         sessionViewModel.checkSession()
                     }
+
+                    // Configurar ViewModelFactory para inyección de dependencias
+                    val viewModelFactory = ViewModelFactory(this)
 
                     // Espera a que se verifique la sesión antes de cargar la navegación
                     if (isUserLoggedIn != null) {
