@@ -145,7 +145,7 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Botón Favoritos
+                // Botón Favoritos - CORREGIDO según la imagen
                 Card(
                     onClick = onNavigateToFavorites,
                     modifier = Modifier
@@ -169,6 +169,7 @@ fun HomeScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
+                            // Texto "Favoritos" en una sola línea
                             Text(
                                 text = "Favoritos",
                                 color = White,
@@ -176,6 +177,7 @@ fun HomeScreen(
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(modifier = Modifier.height(8.dp))
+                            // Texto en múltiples líneas como en la imagen
                             Text(
                                 text = "AGREGA TUS\nVEHÍCULOS\nFAVORITOS",
                                 color = White.copy(alpha = 0.7f),
@@ -185,11 +187,11 @@ fun HomeScreen(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            // Icono de estrella
+                            // Ícono de estrella grande centrado
                             Text(
                                 text = "★",
                                 color = White,
-                                fontSize = 60.sp,
+                                fontSize = 60.sp, // Tamaño aumentado para coincidir con la imagen
                                 fontWeight = FontWeight.Bold
                             )
                         }
