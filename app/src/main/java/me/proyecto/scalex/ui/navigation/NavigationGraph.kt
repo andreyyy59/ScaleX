@@ -8,19 +8,20 @@ import com.google.firebase.auth.FirebaseAuth
 import me.proyecto.scalex.ui.screens.home.HomeScreen
 import me.proyecto.scalex.ui.screens.login.LoginScreen
 import me.proyecto.scalex.ui.screens.register.RegisterScreen
+import me.proyecto.scalex.ui.screens.compare.CompareScreen
 
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
     startDestination: String
 ) {
-    // Verifica si el usuario ya está autenticado
+    //Verifica si el usuario ya está autenticado
     val user = FirebaseAuth.getInstance().currentUser
-    val startDestination = if (user != null) Screen.Home.route else Screen.Login.route
+    val start = if (user != null) Screen.Home.route else Screen.Login.route
 
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = start
     ) {
         composable(route = Screen.Login.route) {
             LoginScreen(
@@ -51,19 +52,21 @@ fun NavigationGraph(
         composable(route = Screen.Home.route) {
             HomeScreen(
                 onLogout = {
-                    FirebaseAuth.getInstance().signOut() // 🔥 Cierra sesión
+                    FirebaseAuth.getInstance().signOut()
                     navController.navigate(Screen.Login.route) {
                         popUpTo(Screen.Home.route) { inclusive = true }
                     }
                 },
                 onNavigateToCompare = {
-                    // TODO: navegar a pantalla de comparación
-                },
-                onNavigateToFavorites = {
-                    // TODO: navegar a pantalla de favoritos
-                },
-                onNavigateToSearch = {
-                    // TODO: navegar a pantalla de búsqueda
+                    navController.navigate(Screen.Compare.route)},
+                onNavigateToFavorites = { /* TODO */ },
+                onNavigateToSearch = { /* TODO */ }
+            )
+        }
+        composable(route = Screen.Compare.route) {
+            CompareScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }
