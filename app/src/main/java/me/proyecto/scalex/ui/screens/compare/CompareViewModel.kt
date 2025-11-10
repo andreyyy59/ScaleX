@@ -7,16 +7,21 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.proyecto.scalex.FavoritesRepository
 import me.proyecto.scalex.data.model.Motorcycle
 import me.proyecto.scalex.data.repository.MotorcycleRepository
 
 class CompareViewModel(
-    private val repository: MotorcycleRepository = MotorcycleRepository()
+    private val repository: MotorcycleRepository = MotorcycleRepository(),
+    private val favoritesRepository: FavoritesRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CompareState())
     val state: StateFlow<CompareState> = _state.asStateFlow()
 
+    init {
+        loadFavorites()
+    }
     fun onEvent(event: CompareEvent) {
         when (event) {
             is CompareEvent.SearchMotorcycles -> {
@@ -45,16 +50,14 @@ class CompareViewModel(
             is CompareEvent.RemoveMotorcycle1 -> {
                 _state.update {
                     it.copy(
-                        motorcycle1 = null,
-                        showSelector1 = true
+                        motorcycle1 = null
                     )
                 }
             }
             is CompareEvent.RemoveMotorcycle2 -> {
                 _state.update {
                     it.copy(
-                        motorcycle2 = null,
-                        showSelector2 = true
+                        motorcycle2 = null
                     )
                 }
             }
@@ -147,13 +150,16 @@ class CompareViewModel(
     }
 
     private fun toggleFavorite(motorcycleId: String) {
-        _state.update { currentState ->
-            val newFavorites = if (motorcycleId in currentState.favorites) {
-                currentState.favorites - motorcycleId
-            } else {
-                currentState.favorites + motorcycleId
-            }
-            currentState.copy(favorites = newFavorites)
+        viewModelScope.launch {
+            favoritesRepository.toggleFavorite(motorcycleId)
+            loadFavorites()
+        }
+    }
+
+    private fun loadFavorites() {
+        viewModelScope.launch {
+            val favorites = favoritesRepository.getFavorites()
+            _state.update { it.copy(favorites = favorites) }
         }
     }
 }

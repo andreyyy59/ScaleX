@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.google.firebase.auth.FirebaseAuth
+import me.proyecto.scalex.FavoritesScreen
 import me.proyecto.scalex.ui.screens.home.HomeScreen
 import me.proyecto.scalex.ui.screens.login.LoginScreen
 import me.proyecto.scalex.ui.screens.register.RegisterScreen
@@ -67,6 +68,19 @@ fun NavigationGraph(
             CompareScreen(
                 onNavigateBack = {
                     navController.popBackStack()
+                }
+            )
+        }
+        composable(route = Screen.Favorites.route) {
+            FavoritesScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToCompare = { motorcycle ->
+                    // Navegar a comparación con la moto seleccionada
+                    navController.navigate(Screen.Compare.route) {
+                        popUpTo(Screen.Favorites.route)
+                    }
                 }
             )
         }
