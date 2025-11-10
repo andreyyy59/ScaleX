@@ -67,4 +67,23 @@ dependencies {
 
     //Auth
     implementation(libs.firebase.auth)
+
+
+    // Retrofit para API
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    // OkHttp
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+
+    // Coil para cargar imágenes
+    implementation(libs.coil.compose)
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.android)
+
+    //Iconos
+    implementation(libs.androidx.material.icons.extended)
+
 }

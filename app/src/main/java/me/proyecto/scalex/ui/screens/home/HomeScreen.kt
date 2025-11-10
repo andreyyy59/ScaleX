@@ -7,9 +7,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.proyecto.scalex.R
+import me.proyecto.scalex.ui.theme.BrightRed
 import me.proyecto.scalex.ui.theme.DarkBrown
 import me.proyecto.scalex.ui.theme.White
 
@@ -58,42 +62,59 @@ fun HomeScreen(
                 )
         )
 
-        // Contenido
+        // Botón de Logout en la esquina superior derecha
+        IconButton(
+            onClick = onLogout,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ExitToApp,
+                contentDescription = "Cerrar Sesión",
+                tint = BrightRed,
+                modifier = Modifier.size(32.dp)
+            )
+        }
+
+        // Contenido centrado
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
-
-            // Logo
+            // Logo más grande
             Image(
                 painter = painterResource(id = R.drawable.logo_scalex),
                 contentDescription = "ScaleX Logo",
                 modifier = Modifier
-                    .fillMaxWidth(0.85f)
-                    .height(180.dp),
+                    .fillMaxWidth(0.9f)
+                    .height(220.dp),
                 contentScale = ContentScale.Fit
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
-            // Botón COMPARAR (grande)
+            // Botón COMPARAR (grande) con borde blanco
             Card(
                 onClick = onNavigateToCompare,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp),
+                    .height(120.dp)
+                    .border(
+                        width = 2.dp,
+                        color = White,
+                        shape = RoundedCornerShape(12.dp)
+                    ),
                 colors = CardDefaults.cardColors(
                     containerColor = DarkBrown
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Box(
-                    modifier = Modifier.fillMaxSize()
-                        .border(width = 2.dp,
-                            color = Color.White),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
@@ -119,7 +140,7 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Fila con dos botones
+            // Fila con dos botones con bordes blancos
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -129,7 +150,12 @@ fun HomeScreen(
                     onClick = onNavigateToFavorites,
                     modifier = Modifier
                         .weight(1f)
-                        .height(220.dp),
+                        .height(220.dp)
+                        .border(
+                            width = 2.dp,
+                            color = White,
+                            shape = RoundedCornerShape(12.dp)
+                        ),
                     colors = CardDefaults.cardColors(
                         containerColor = DarkBrown
                     ),
@@ -175,7 +201,12 @@ fun HomeScreen(
                     onClick = onNavigateToSearch,
                     modifier = Modifier
                         .weight(1f)
-                        .height(220.dp),
+                        .height(220.dp)
+                        .border(
+                            width = 2.dp,
+                            color = White,
+                            shape = RoundedCornerShape(12.dp)
+                        ),
                     colors = CardDefaults.cardColors(
                         containerColor = DarkBrown
                     ),
@@ -232,8 +263,6 @@ fun HomeScreen(
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.weight(1f))
         }
     }
 }
