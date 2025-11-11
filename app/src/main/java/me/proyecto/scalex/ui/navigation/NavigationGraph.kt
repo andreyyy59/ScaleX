@@ -60,7 +60,9 @@ fun NavigationGraph(
                 },
                 onNavigateToCompare = {
                     navController.navigate(Screen.Compare.route)},
-                onNavigateToFavorites = { /* TODO */ },
+                onNavigateToFavorites = {
+                    navController.navigate(Screen.Favorites.route)
+                },
                 onNavigateToSearch = { /* TODO */ }
             )
         }
