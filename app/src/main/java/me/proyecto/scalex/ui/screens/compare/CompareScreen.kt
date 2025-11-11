@@ -1,3 +1,5 @@
+// ui/screens/compare/CompareScreen.kt
+
 package me.proyecto.scalex.ui.screens.compare
 
 import androidx.compose.foundation.Image
@@ -11,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -39,11 +40,6 @@ fun CompareScreen(
 ) {
     val viewModel: CompareViewModel = viewModel()
     val state by viewModel.state.collectAsState()
-
-    // Cargar favoritos al iniciar la pantalla
-    LaunchedEffect(Unit) {
-        // Los favoritos se cargan automáticamente en el init del ViewModel
-    }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -124,7 +120,77 @@ fun CompareScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ... (resto del código de CompareScreen permanece igual)
+            // Espacio para visualización de tamaños - Vista LATERAL (PLACEHOLDER)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
+                    .padding(horizontal = 16.dp)
+                    .background(Color.DarkGray.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                    .border(1.dp, White.copy(alpha = 0.3f), RoundedCornerShape(12.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "VISTA LATERAL",
+                        color = White.copy(alpha = 0.7f),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "[Comparación visual de tamaños]",
+                        color = White.copy(alpha = 0.4f),
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    if (state.motorcycle1 != null && state.motorcycle2 != null) {
+                        Text(
+                            text = "${state.motorcycle1?.make} vs ${state.motorcycle2?.make}",
+                            color = White.copy(alpha = 0.5f),
+                            fontSize = 11.sp
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Vista SUPERIOR (PLACEHOLDER)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .padding(horizontal = 16.dp)
+                    .background(Color.DarkGray.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                    .border(1.dp, White.copy(alpha = 0.3f), RoundedCornerShape(12.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "VISTA SUPERIOR",
+                        color = White.copy(alpha = 0.7f),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "[Comparación visual de tamaños]",
+                        color = White.copy(alpha = 0.4f),
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Cards con información de las motos
             Row(
@@ -144,7 +210,7 @@ fun CompareScreen(
                     onRemove = { viewModel.onEvent(CompareEvent.RemoveMotorcycle1) },
                     onToggleFavorite = {
                         state.motorcycle1?.let {
-                            viewModel.onEvent(CompareEvent.ToggleFavorite(it.getId()))
+                            viewModel.onEvent(CompareEvent.ToggleFavorite(it.getId(), it))  // ← Pasar el motorcycle
                         }
                     },
                     onShowSearch = { viewModel.onEvent(CompareEvent.ShowSelector1) },
@@ -162,7 +228,7 @@ fun CompareScreen(
                     onRemove = { viewModel.onEvent(CompareEvent.RemoveMotorcycle2) },
                     onToggleFavorite = {
                         state.motorcycle2?.let {
-                            viewModel.onEvent(CompareEvent.ToggleFavorite(it.getId()))
+                            viewModel.onEvent(CompareEvent.ToggleFavorite(it.getId(), it))  // ← Pasar el motorcycle
                         }
                     },
                     onShowSearch = { viewModel.onEvent(CompareEvent.ShowSelector2) },
@@ -170,8 +236,105 @@ fun CompareScreen(
                 )
             }
 
-            // ... (resto del código de CompareScreen)
+            Spacer(modifier = Modifier.height(12.dp))
 
+            // Thumbnails de motos (PLACEHOLDER)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Thumbnail 1
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(100.dp)
+                        .background(Color.DarkGray.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                        .border(2.dp, BrightRed, RoundedCornerShape(8.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = if (state.motorcycle1 != null) "Imagen" else "[Sin moto]",
+                            color = White.copy(alpha = 0.5f),
+                            fontSize = 12.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        if (state.motorcycle1 != null) {
+                            Text(
+                                text = state.motorcycle1!!.make,
+                                color = White.copy(alpha = 0.6f),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+
+                // Thumbnail 2
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(100.dp)
+                        .background(Color.DarkGray.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                        .border(2.dp, Color.Cyan, RoundedCornerShape(8.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = if (state.motorcycle2 != null) "Imagen" else "[Sin moto]",
+                            color = White.copy(alpha = 0.5f),
+                            fontSize = 12.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        if (state.motorcycle2 != null) {
+                            Text(
+                                text = state.motorcycle2!!.make,
+                                color = White.copy(alpha = 0.6f),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Tabla de especificaciones técnicas
+            if (state.motorcycle1 != null || state.motorcycle2 != null) {
+                TechnicalSpecsCard(
+                    motorcycle1 = state.motorcycle1,
+                    motorcycle2 = state.motorcycle2,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+            } else {
+                // Mensaje cuando no hay motos seleccionadas
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 40.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Agrega motocicletas para ver la comparación",
+                        color = White.copy(alpha = 0.5f),
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
 
         // Loading indicator

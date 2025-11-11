@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.mediation.test.suite)
 
 
     testImplementation(libs.junit)
@@ -85,5 +86,7 @@ dependencies {
 
     //Iconos
     implementation(libs.androidx.material.icons.extended)
+
+    implementation(libs.gson)
 
 }

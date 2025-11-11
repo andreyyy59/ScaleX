@@ -1,27 +1,29 @@
 package me.proyecto.scalex.ui.screens.compare
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import me.proyecto.scalex.FavoritesRepository
 import me.proyecto.scalex.data.model.Motorcycle
+import me.proyecto.scalex.data.repository.FavoritesRepository
 import me.proyecto.scalex.data.repository.MotorcycleRepository
 
-class CompareViewModel(
-    private val repository: MotorcycleRepository = MotorcycleRepository(),
-    private val favoritesRepository: FavoritesRepository
-) : ViewModel() {
+class CompareViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val motorcycleRepository = MotorcycleRepository()
+    private val favoritesRepository = FavoritesRepository.getInstance(application)
 
     private val _state = MutableStateFlow(CompareState())
     val state: StateFlow<CompareState> = _state.asStateFlow()
 
     init {
-        loadFavorites()
+        loadFavoriteIds()
     }
+
     fun onEvent(event: CompareEvent) {
         when (event) {
             is CompareEvent.SearchMotorcycles -> {
@@ -50,19 +52,21 @@ class CompareViewModel(
             is CompareEvent.RemoveMotorcycle1 -> {
                 _state.update {
                     it.copy(
-                        motorcycle1 = null
+                        motorcycle1 = null,
+                        showSelector1 = true
                     )
                 }
             }
             is CompareEvent.RemoveMotorcycle2 -> {
                 _state.update {
                     it.copy(
-                        motorcycle2 = null
+                        motorcycle2 = null,
+                        showSelector2 = true
                     )
                 }
             }
             is CompareEvent.ToggleFavorite -> {
-                toggleFavorite(event.motorcycleId)
+                toggleFavorite(event.motorcycleId, event.motorcycle)
             }
             is CompareEvent.ShowSelector1 -> {
                 _state.update {
@@ -115,7 +119,7 @@ class CompareViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
-            val result = repository.searchByModel(query.trim())
+            val result = motorcycleRepository.searchByModel(query.trim())
 
             result.fold(
                 onSuccess = { motorcycles ->
@@ -149,17 +153,19 @@ class CompareViewModel(
         }
     }
 
-    private fun toggleFavorite(motorcycleId: String) {
+    private fun toggleFavorite(motorcycleId: String, motorcycle: Motorcycle?) {
         viewModelScope.launch {
-            favoritesRepository.toggleFavorite(motorcycleId)
-            loadFavorites()
+            motorcycle?.let {
+                favoritesRepository.toggleFavorite(it)
+                loadFavoriteIds()
+            }
         }
     }
 
-    private fun loadFavorites() {
+    private fun loadFavoriteIds() {
         viewModelScope.launch {
-            val favorites = favoritesRepository.getFavorites()
-            _state.update { it.copy(favorites = favorites) }
+            val favoriteIds = favoritesRepository.getFavoriteIds()
+            _state.update { it.copy(favorites = favoriteIds) }
         }
     }
 }
@@ -170,7 +176,7 @@ sealed class CompareEvent {
     data class SelectMotorcycle2(val motorcycle: Motorcycle) : CompareEvent()
     object RemoveMotorcycle1 : CompareEvent()
     object RemoveMotorcycle2 : CompareEvent()
-    data class ToggleFavorite(val motorcycleId: String) : CompareEvent()
+    data class ToggleFavorite(val motorcycleId: String, val motorcycle: Motorcycle?) : CompareEvent()
     object ShowSelector1 : CompareEvent()
     object ShowSelector2 : CompareEvent()
     object HideSelector1 : CompareEvent()
