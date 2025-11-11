@@ -71,8 +71,6 @@ fun NavigationGraph(
                 }
             )
         }
-        // En NavigationGraph.kt
-
         composable(route = Screen.Favorites.route) {
             FavoritesScreen(
                 onNavigateBack = {

@@ -145,7 +145,7 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Botón Favoritos - CORREGIDO según la imagen
+                // Botón Favoritos
                 Card(
                     onClick = onNavigateToFavorites,
                     modifier = Modifier

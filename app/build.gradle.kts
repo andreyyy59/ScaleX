@@ -87,6 +87,5 @@ dependencies {
     //Iconos
     implementation(libs.androidx.material.icons.extended)
 
-    implementation(libs.gson)
-
+    implementation(libs.play.services.ads)
 }

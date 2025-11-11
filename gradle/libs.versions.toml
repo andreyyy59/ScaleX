@@ -18,6 +18,7 @@ materialIconsExtended = "1.7.8"
 navigationCompose = "2.9.6"
 firebaseAuth = "24.0.1"
 okhttp = "5.3.0"
+playServicesAds = "24.7.0"
 retrofit = "3.0.0"
 mediationTestSuite = "3.0.0"
 
@@ -47,6 +48,7 @@ firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 mediation-test-suite = { group = "com.google.android.ads", name = "mediation-test-suite", version.ref = "mediationTestSuite" }
 

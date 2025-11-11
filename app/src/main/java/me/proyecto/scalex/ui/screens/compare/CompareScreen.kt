@@ -1,5 +1,3 @@
-// ui/screens/compare/CompareScreen.kt
-
 package me.proyecto.scalex.ui.screens.compare
 
 import androidx.compose.foundation.Image
@@ -20,12 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import me.proyecto.scalex.R
 import me.proyecto.scalex.ui.screens.compare.components.MotorcycleCard
 import me.proyecto.scalex.ui.screens.compare.components.MotorcycleSelector
@@ -38,7 +39,16 @@ import me.proyecto.scalex.ui.theme.White
 fun CompareScreen(
     onNavigateBack: () -> Unit
 ) {
-    val viewModel: CompareViewModel = viewModel()
+    val context = LocalContext.current
+
+    val viewModel: CompareViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer {
+                CompareViewModel(context.applicationContext as android.app.Application)
+            }
+        }
+    )
+
     val state by viewModel.state.collectAsState()
 
     Box(
@@ -102,7 +112,7 @@ fun CompareScreen(
                 )
             }
 
-            // Título "PRUEBA EL VEHÍCULO A COMPARAR"
+            // Título "PRUEBA LA MOTOCICLETA A COMPARAR"
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -111,7 +121,7 @@ fun CompareScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "PRUEBA EL VEHÍCULO A COMPARAR",
+                    text = "PRUEBA LA MOTOCICLETA A COMPARAR",
                     color = White,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
@@ -149,11 +159,28 @@ fun CompareScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     if (state.motorcycle1 != null && state.motorcycle2 != null) {
-                        Text(
-                            text = "${state.motorcycle1?.make} vs ${state.motorcycle2?.make}",
-                            color = White.copy(alpha = 0.5f),
-                            fontSize = 11.sp
-                        )
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = state.motorcycle1!!.make,
+                                color = BrightRed,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = " VS ",
+                                color = White.copy(alpha = 0.5f),
+                                fontSize = 11.sp
+                            )
+                            Text(
+                                text = state.motorcycle2!!.make,
+                                color = Color.Cyan,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
             }
@@ -210,7 +237,7 @@ fun CompareScreen(
                     onRemove = { viewModel.onEvent(CompareEvent.RemoveMotorcycle1) },
                     onToggleFavorite = {
                         state.motorcycle1?.let {
-                            viewModel.onEvent(CompareEvent.ToggleFavorite(it.getId(), it))  // ← Pasar el motorcycle
+                            viewModel.onEvent(CompareEvent.ToggleFavorite(it.getId(), it))
                         }
                     },
                     onShowSearch = { viewModel.onEvent(CompareEvent.ShowSelector1) },
@@ -228,7 +255,7 @@ fun CompareScreen(
                     onRemove = { viewModel.onEvent(CompareEvent.RemoveMotorcycle2) },
                     onToggleFavorite = {
                         state.motorcycle2?.let {
-                            viewModel.onEvent(CompareEvent.ToggleFavorite(it.getId(), it))  // ← Pasar el motorcycle
+                            viewModel.onEvent(CompareEvent.ToggleFavorite(it.getId(), it))
                         }
                     },
                     onShowSearch = { viewModel.onEvent(CompareEvent.ShowSelector2) },
@@ -258,17 +285,23 @@ fun CompareScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = if (state.motorcycle1 != null) "Imagen" else "[Sin moto]",
-                            color = White.copy(alpha = 0.5f),
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.Center
+                            text = "🏍️",
+                            fontSize = 32.sp
                         )
                         if (state.motorcycle1 != null) {
+                            Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = state.motorcycle1!!.make,
                                 color = White.copy(alpha = 0.6f),
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            )
+                        } else {
+                            Text(
+                                text = "[Sin moto]",
+                                color = White.copy(alpha = 0.3f),
+                                fontSize = 10.sp,
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -288,17 +321,23 @@ fun CompareScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = if (state.motorcycle2 != null) "Imagen" else "[Sin moto]",
-                            color = White.copy(alpha = 0.5f),
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.Center
+                            text = "🏍️",
+                            fontSize = 32.sp
                         )
                         if (state.motorcycle2 != null) {
+                            Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = state.motorcycle2!!.make,
                                 color = White.copy(alpha = 0.6f),
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            )
+                        } else {
+                            Text(
+                                text = "[Sin moto]",
+                                color = White.copy(alpha = 0.3f),
+                                fontSize = 10.sp,
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -325,12 +364,29 @@ fun CompareScreen(
                         .padding(horizontal = 16.dp, vertical = 40.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "Agrega motocicletas para ver la comparación",
-                        color = White.copy(alpha = 0.5f),
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Center
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "🏍️",
+                            fontSize = 64.sp
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Agrega motocicletas para comparar",
+                            color = White.copy(alpha = 0.7f),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Presiona '+' para buscar y seleccionar motos",
+                            color = White.copy(alpha = 0.5f),
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
 
