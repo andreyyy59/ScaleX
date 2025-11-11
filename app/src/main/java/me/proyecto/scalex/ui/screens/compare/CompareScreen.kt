@@ -34,6 +34,9 @@ import me.proyecto.scalex.ui.screens.compare.components.TechnicalSpecsCard
 import me.proyecto.scalex.ui.theme.BrightRed
 import me.proyecto.scalex.ui.theme.DarkBrown
 import me.proyecto.scalex.ui.theme.White
+import me.proyecto.scalex.ui.screens.compare.components.MotorcycleSideComparison
+import me.proyecto.scalex.ui.screens.compare.components.MotorcycleTopComparison
+import me.proyecto.scalex.ui.screens.compare.components.MotorcycleThumbnail
 
 @Composable
 fun CompareScreen(
@@ -137,29 +140,38 @@ fun CompareScreen(
                     .height(180.dp)
                     .padding(horizontal = 16.dp)
                     .background(Color.DarkGray.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-                    .border(1.dp, White.copy(alpha = 0.3f), RoundedCornerShape(12.dp)),
-                contentAlignment = Alignment.Center
+                    .border(1.dp, White.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
             ) {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
                         text = "VISTA LATERAL",
                         color = White.copy(alpha = 0.7f),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "[Comparación visual de tamaños]",
-                        color = White.copy(alpha = 0.4f),
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
                         textAlign = TextAlign.Center
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+
+                    MotorcycleSideComparison(
+                        motorcycle1 = state.motorcycle1,
+                        motorcycle2 = state.motorcycle2,
+                        color1 = BrightRed,
+                        color2 = Color.Cyan,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+
                     if (state.motorcycle1 != null && state.motorcycle2 != null) {
                         Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp),
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -194,28 +206,35 @@ fun CompareScreen(
                     .height(140.dp)
                     .padding(horizontal = 16.dp)
                     .background(Color.DarkGray.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-                    .border(1.dp, White.copy(alpha = 0.3f), RoundedCornerShape(12.dp)),
-                contentAlignment = Alignment.Center
+                    .border(1.dp, White.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
             ) {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
                         text = "VISTA SUPERIOR",
                         color = White.copy(alpha = 0.7f),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "[Comparación visual de tamaños]",
-                        color = White.copy(alpha = 0.4f),
                         fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
                         textAlign = TextAlign.Center
+                    )
+
+                    MotorcycleTopComparison(
+                        motorcycle1 = state.motorcycle1,
+                        motorcycle2 = state.motorcycle2,
+                        color1 = BrightRed,
+                        color2 = Color.Cyan,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
                     )
                 }
             }
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -281,31 +300,10 @@ fun CompareScreen(
                         .border(2.dp, BrightRed, RoundedCornerShape(8.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "🏍️",
-                            fontSize = 32.sp
-                        )
-                        if (state.motorcycle1 != null) {
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = state.motorcycle1!!.make,
-                                color = White.copy(alpha = 0.6f),
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center
-                            )
-                        } else {
-                            Text(
-                                text = "[Sin moto]",
-                                color = White.copy(alpha = 0.3f),
-                                fontSize = 10.sp,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
+                    MotorcycleThumbnail(
+                        motorcycle = state.motorcycle1,
+                        color = BrightRed
+                    )
                 }
 
                 // Thumbnail 2
@@ -317,136 +315,115 @@ fun CompareScreen(
                         .border(2.dp, Color.Cyan, RoundedCornerShape(8.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    MotorcycleThumbnail(
+                        motorcycle = state.motorcycle2,
+                        color = Color.Cyan
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Tabla de especificaciones técnicas
+                if (state.motorcycle1 != null || state.motorcycle2 != null) {
+                    TechnicalSpecsCard(
+                        motorcycle1 = state.motorcycle1,
+                        motorcycle2 = state.motorcycle2,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    )
+                } else {
+                    // Mensaje cuando no hay motos seleccionadas
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 40.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "🏍️",
-                            fontSize = 32.sp
-                        )
-                        if (state.motorcycle2 != null) {
-                            Spacer(modifier = Modifier.height(4.dp))
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             Text(
-                                text = state.motorcycle2!!.make,
-                                color = White.copy(alpha = 0.6f),
-                                fontSize = 11.sp,
+                                text = "🏍️",
+                                fontSize = 64.sp
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Agrega motocicletas para comparar",
+                                color = White.copy(alpha = 0.7f),
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center
                             )
-                        } else {
+                            Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "[Sin moto]",
-                                color = White.copy(alpha = 0.3f),
-                                fontSize = 10.sp,
+                                text = "Presiona '+' para buscar y seleccionar motos",
+                                color = White.copy(alpha = 0.5f),
+                                fontSize = 14.sp,
                                 textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+
+            // Loading indicator
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = DarkBrown
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            CircularProgressIndicator(color = BrightRed)
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Buscando motocicletas...",
+                                color = White,
+                                fontSize = 14.sp
                             )
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Tabla de especificaciones técnicas
-            if (state.motorcycle1 != null || state.motorcycle2 != null) {
-                TechnicalSpecsCard(
-                    motorcycle1 = state.motorcycle1,
-                    motorcycle2 = state.motorcycle2,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+            // Diálogo de búsqueda para Moto 1
+            if (state.showSelector1) {
+                MotorcycleSelector(
+                    searchQuery = state.searchQuery,
+                    searchResults = state.searchResults,
+                    isLoading = state.isLoading,
+                    error = state.error,
+                    onQueryChange = { viewModel.onEvent(CompareEvent.UpdateSearchQuery(it)) },
+                    onSearch = { viewModel.onEvent(CompareEvent.SearchMotorcycles(it)) },
+                    onSelect = { viewModel.onEvent(CompareEvent.SelectMotorcycle1(it)) },
+                    onDismiss = { viewModel.onEvent(CompareEvent.HideSelector1) }
                 )
-            } else {
-                // Mensaje cuando no hay motos seleccionadas
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 40.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "🏍️",
-                            fontSize = 64.sp
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Agrega motocicletas para comparar",
-                            color = White.copy(alpha = 0.7f),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Presiona '+' para buscar y seleccionar motos",
-                            color = White.copy(alpha = 0.5f),
-                            fontSize = 14.sp,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-        }
-
-        // Loading indicator
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = DarkBrown
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        CircularProgressIndicator(color = BrightRed)
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Buscando motocicletas...",
-                            color = White,
-                            fontSize = 14.sp
-                        )
-                    }
-                }
+            // Diálogo de búsqueda para Moto 2
+            if (state.showSelector2) {
+                MotorcycleSelector(
+                    searchQuery = state.searchQuery,
+                    searchResults = state.searchResults,
+                    isLoading = state.isLoading,
+                    error = state.error,
+                    onQueryChange = { viewModel.onEvent(CompareEvent.UpdateSearchQuery(it)) },
+                    onSearch = { viewModel.onEvent(CompareEvent.SearchMotorcycles(it)) },
+                    onSelect = { viewModel.onEvent(CompareEvent.SelectMotorcycle2(it)) },
+                    onDismiss = { viewModel.onEvent(CompareEvent.HideSelector2) }
+                )
             }
-        }
-
-        // Diálogo de búsqueda para Moto 1
-        if (state.showSelector1) {
-            MotorcycleSelector(
-                searchQuery = state.searchQuery,
-                searchResults = state.searchResults,
-                isLoading = state.isLoading,
-                error = state.error,
-                onQueryChange = { viewModel.onEvent(CompareEvent.UpdateSearchQuery(it)) },
-                onSearch = { viewModel.onEvent(CompareEvent.SearchMotorcycles(it)) },
-                onSelect = { viewModel.onEvent(CompareEvent.SelectMotorcycle1(it)) },
-                onDismiss = { viewModel.onEvent(CompareEvent.HideSelector1) }
-            )
-        }
-
-        // Diálogo de búsqueda para Moto 2
-        if (state.showSelector2) {
-            MotorcycleSelector(
-                searchQuery = state.searchQuery,
-                searchResults = state.searchResults,
-                isLoading = state.isLoading,
-                error = state.error,
-                onQueryChange = { viewModel.onEvent(CompareEvent.UpdateSearchQuery(it)) },
-                onSearch = { viewModel.onEvent(CompareEvent.SearchMotorcycles(it)) },
-                onSelect = { viewModel.onEvent(CompareEvent.SelectMotorcycle2(it)) },
-                onDismiss = { viewModel.onEvent(CompareEvent.HideSelector2) }
-            )
         }
     }
 }
