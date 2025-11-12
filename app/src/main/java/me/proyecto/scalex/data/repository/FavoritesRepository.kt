@@ -1,25 +1,18 @@
-// data/repository/FavoritesRepository.kt
-
 package me.proyecto.scalex.data.repository
 
 import android.content.Context
-import android.content.SharedPreferences
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import kotlinx.coroutines.tasks.await
 import me.proyecto.scalex.data.model.Motorcycle
 
 class FavoritesRepository(context: Context) {
 
-    private val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
-    private val gson = Gson()
+    private val firestore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
     companion object {
-        private const val PREFS_NAME = "scalex_favorites"
-        private const val KEY_FAVORITES = "favorites_list"
-
-        // Singleton instance
         @Volatile
         private var instance: FavoritesRepository? = null
 
@@ -32,14 +25,31 @@ class FavoritesRepository(context: Context) {
         }
     }
 
+    // Obtener referencia a la colección de favoritos del usuario actual
+    private fun getFavoritesCollection() =
+        firestore.collection("users")
+            .document(getCurrentUserId())
+            .collection("favorites")
+
+    // Obtener ID del usuario actual
+    private fun getCurrentUserId(): String {
+        return auth.currentUser?.uid ?: "anonymous"
+        // Si no hay usuario autenticado, usa "anonymous"
+    }
+
     /**
-     * Obtener todas las motos favoritas
+     * Obtener todos los favoritos del usuario
      */
-    fun getAllFavorites(): List<Motorcycle> {
-        val json = sharedPreferences.getString(KEY_FAVORITES, null) ?: return emptyList()
-        val type = object : TypeToken<List<Motorcycle>>() {}.type
+    suspend fun getAllFavorites(): List<Motorcycle> {
         return try {
-            gson.fromJson(json, type) ?: emptyList()
+            val snapshot = getFavoritesCollection()
+                .orderBy("addedAt", Query.Direction.DESCENDING)
+                .get()
+                .await()
+
+            snapshot.documents.mapNotNull { doc ->
+                doc.toObject(Motorcycle::class.java)
+            }
         } catch (e: Exception) {
             emptyList()
         }
@@ -48,28 +58,34 @@ class FavoritesRepository(context: Context) {
     /**
      * Agregar una moto a favoritos
      */
-    fun addFavorite(motorcycle: Motorcycle): Boolean {
-        val currentFavorites = getAllFavorites().toMutableList()
+    suspend fun addFavorite(motorcycle: Motorcycle): Boolean {
+        return try {
+            val motorcycleMap = motorcycle.toMap().toMutableMap()
+            motorcycleMap["addedAt"] = com.google.firebase.Timestamp.now()
 
-        // Verificar si ya existe
-        if (currentFavorites.any { it.getId() == motorcycle.getId() }) {
-            return false // Ya está en favoritos
+            getFavoritesCollection()
+                .document(motorcycle.getId())
+                .set(motorcycleMap)
+                .await()
+
+            true
+        } catch (e: Exception) {
+            false
         }
-
-        currentFavorites.add(motorcycle)
-        return saveFavorites(currentFavorites)
     }
 
     /**
      * Eliminar una moto de favoritos
      */
-    fun removeFavorite(motorcycleId: String): Boolean {
-        val currentFavorites = getAllFavorites().toMutableList()
-        val removed = currentFavorites.removeAll { it.getId() == motorcycleId }
+    suspend fun removeFavorite(motorcycleId: String): Boolean {
+        return try {
+            getFavoritesCollection()
+                .document(motorcycleId)
+                .delete()
+                .await()
 
-        return if (removed) {
-            saveFavorites(currentFavorites)
-        } else {
+            true
+        } catch (e: Exception) {
             false
         }
     }
@@ -77,35 +93,68 @@ class FavoritesRepository(context: Context) {
     /**
      * Verificar si una moto está en favoritos
      */
-    fun isFavorite(motorcycleId: String): Boolean {
-        return getAllFavorites().any { it.getId() == motorcycleId }
+    suspend fun isFavorite(motorcycleId: String): Boolean {
+        return try {
+            val doc = getFavoritesCollection()
+                .document(motorcycleId)
+                .get()
+                .await()
+
+            doc.exists()
+        } catch (e: Exception) {
+            false
+        }
     }
 
     /**
      * Obtener una moto favorita por ID
      */
-    fun getFavoriteById(motorcycleId: String): Motorcycle? {
-        return getAllFavorites().find { it.getId() == motorcycleId }
+    suspend fun getFavoriteById(motorcycleId: String): Motorcycle? {
+        return try {
+            val doc = getFavoritesCollection()
+                .document(motorcycleId)
+                .get()
+                .await()
+
+            doc.toObject(Motorcycle::class.java)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     /**
      * Limpiar todos los favoritos
      */
-    fun clearAllFavorites(): Boolean {
-        return sharedPreferences.edit().remove(KEY_FAVORITES).commit()
+    suspend fun clearAllFavorites(): Boolean {
+        return try {
+            val snapshot = getFavoritesCollection().get().await()
+
+            snapshot.documents.forEach { doc ->
+                doc.reference.delete().await()
+            }
+
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 
     /**
      * Obtener cantidad de favoritos
      */
-    fun getFavoritesCount(): Int {
-        return getAllFavorites().size
+    suspend fun getFavoritesCount(): Int {
+        return try {
+            val snapshot = getFavoritesCollection().get().await()
+            snapshot.size()
+        } catch (e: Exception) {
+            0
+        }
     }
 
     /**
      * Toggle favorito (agregar si no existe, eliminar si existe)
      */
-    fun toggleFavorite(motorcycle: Motorcycle): Boolean {
+    suspend fun toggleFavorite(motorcycle: Motorcycle): Boolean {
         return if (isFavorite(motorcycle.getId())) {
             removeFavorite(motorcycle.getId())
         } else {
@@ -114,17 +163,77 @@ class FavoritesRepository(context: Context) {
     }
 
     /**
-     * Guardar lista de favoritos
+     * Obtener IDs de favoritos
      */
-    private fun saveFavorites(favorites: List<Motorcycle>): Boolean {
-        val json = gson.toJson(favorites)
-        return sharedPreferences.edit().putString(KEY_FAVORITES, json).commit()
+    suspend fun getFavoriteIds(): Set<String> {
+        return try {
+            val snapshot = getFavoritesCollection().get().await()
+            snapshot.documents.map { it.id }.toSet()
+        } catch (e: Exception) {
+            emptySet()
+        }
     }
+    fun observeFavorites(onUpdate: (List<Motorcycle>) -> Unit) {
+        getFavoritesCollection()
+            .orderBy("addedAt", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    onUpdate(emptyList())
+                    return@addSnapshotListener
+                }
 
-    /**
-     * Obtener IDs de favoritos (útil para verificaciones rápidas)
-     */
-    fun getFavoriteIds(): Set<String> {
-        return getAllFavorites().map { it.getId() }.toSet()
+                val favorites = snapshot?.documents?.mapNotNull { doc ->
+                    doc.toObject(Motorcycle::class.java)
+                } ?: emptyList()
+
+                onUpdate(favorites)
+            }
     }
+}
+
+// Extensión para convertir Motorcycle a Map
+private fun Motorcycle.toMap(): Map<String, Any?> {
+    return hashMapOf(
+        "make" to make,
+        "model" to model,
+        "year" to year,
+        "type" to type,
+        "displacement" to displacement,
+        "engine" to engine,
+        "power" to power,
+        "torque" to torque,
+        "topSpeed" to topSpeed,
+        "compression" to compression,
+        "boreStroke" to boreStroke,
+        "valvesPerCylinder" to valvesPerCylinder,
+        "fuelSystem" to fuelSystem,
+        "fuelControl" to fuelControl,
+        "ignition" to ignition,
+        "lubrication" to lubrication,
+        "cooling" to cooling,
+        "gearbox" to gearbox,
+        "transmission" to transmission,
+        "clutch" to clutch,
+        "frame" to frame,
+        "frontSuspension" to frontSuspension,
+        "frontWheelTravel" to frontWheelTravel,
+        "rearSuspension" to rearSuspension,
+        "rearWheelTravel" to rearWheelTravel,
+        "frontTire" to frontTire,
+        "rearTire" to rearTire,
+        "frontBrakes" to frontBrakes,
+        "rearBrakes" to rearBrakes,
+        "totalWeight" to totalWeight,
+        "totalHeight" to totalHeight,
+        "totalLength" to totalLength,
+        "totalWidth" to totalWidth,
+        "seatHeight" to seatHeight,
+        "wheelbase" to wheelbase,
+        "groundClearance" to groundClearance,
+        "fuelCapacity" to fuelCapacity,
+        "starter" to starter,
+        "fuelConsumption" to fuelConsumption,
+        "emission" to emission,
+        "dryWeight" to dryWeight
+    )
 }

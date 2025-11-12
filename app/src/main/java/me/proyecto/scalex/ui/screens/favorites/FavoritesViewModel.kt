@@ -19,8 +19,14 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
     val state: StateFlow<FavoritesState> = _state.asStateFlow()
 
     init {
+        favoritesRepository.observeFavorites { favorites ->
+            _state.update { it.copy(favorites = favorites, isLoading = false) }
+        }
+
         loadFavorites()
     }
+
+
 
     fun onEvent(event: FavoritesEvent) {
         when (event) {
@@ -75,11 +81,11 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
             val success = favoritesRepository.removeFavorite(motorcycleId)
 
             if (success) {
-                // Actualizar el estado local
-                _state.update { currentState ->
-                    currentState.copy(
-                        favorites = currentState.favorites.filter { it.getId() != motorcycleId }
-                    )
+                // Recargar favoritos desde Firestore
+                loadFavorites()
+            } else {
+                _state.update {
+                    it.copy(error = "Error al eliminar favorito")
                 }
             }
         }
@@ -87,26 +93,49 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
 
     private fun clearAllFavorites() {
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+
             val success = favoritesRepository.clearAllFavorites()
 
             if (success) {
-                _state.update { it.copy(favorites = emptyList()) }
+                _state.update {
+                    it.copy(
+                        favorites = emptyList(),
+                        isLoading = false
+                    )
+                }
+            } else {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = "Error al limpiar favoritos"
+                    )
+                }
             }
         }
     }
 
     fun addFavorite(motorcycle: Motorcycle) {
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+
             val success = favoritesRepository.addFavorite(motorcycle)
 
             if (success) {
                 loadFavorites() // Recargar la lista
+            } else {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = "Error al agregar favorito"
+                    )
+                }
             }
         }
     }
 
     fun isFavorite(motorcycleId: String): Boolean {
-        return favoritesRepository.isFavorite(motorcycleId)
+        return state.value.favorites.any { it.getId() == motorcycleId }
     }
 }
 
