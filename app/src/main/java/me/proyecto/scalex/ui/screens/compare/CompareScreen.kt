@@ -1,5 +1,3 @@
-// ui/screens/compare/CompareScreen.kt
-
 package me.proyecto.scalex.ui.screens.compare
 
 import androidx.compose.foundation.Image

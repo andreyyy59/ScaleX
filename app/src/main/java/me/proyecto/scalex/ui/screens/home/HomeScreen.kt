@@ -171,7 +171,7 @@ fun HomeScreen(
                         ) {
                             // Texto "Favoritos" en una sola línea
                             Text(
-                                text = "Favoritos",
+                                text = "FAVORITOS",
                                 color = White,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold
@@ -223,6 +223,7 @@ fun HomeScreen(
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
+                                modifier = Modifier.padding(top =  10.dp),
                                 text = "BUSCAR",
                                 color = White,
                                 fontSize = 20.sp,
@@ -242,22 +243,16 @@ fun HomeScreen(
                                 textAlign = TextAlign.Center,
                                 lineHeight = 14.sp
                             )
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
 
                             // Flechas arriba y abajo
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    text = "↑",
+                                    text = "↑↓",
                                     color = White,
-                                    fontSize = 40.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "↓",
-                                    color = White,
-                                    fontSize = 40.sp,
+                                    fontSize = 70.sp,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
