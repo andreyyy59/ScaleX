@@ -72,7 +72,7 @@
 
 1. **Clona el repositorio**
 ```bash
-   git clone https://github.com/tuusuario/scalex-app.git
+   git clone https://github.com/adreyyy59/scalex-app.git
    cd scalex-app
 ```
 
@@ -139,50 +139,34 @@
 
 ## 🏗️ Arquitectura
 ```
-📦 scalex
- ┣ 📂 data
- ┃ ┣ 📂 model
- ┃ ┃ ┗ 📜 Motorcycle.kt
- ┃ ┣ 📂 remote
- ┃ ┃ ┗ 📜 MotorcycleApiService.kt
- ┃ ┗ 📂 repository
- ┃   ┣ 📜 AuthRepository.kt
- ┃   ┗ 📜 MotorcycleRepository.kt
- ┣ 📂 domain
- ┃ ┣ 📂 usecase
- ┃ ┗ 📂 repository
- ┣ 📂 ui
- ┃ ┣ 📂 theme
- ┃ ┃ ┣ 📜 Color.kt
- ┃ ┃ ┣ 📜 Theme.kt
- ┃ ┃ ┗ 📜 Type.kt
- ┃ ┣ 📂 components
- ┃ ┃ ┣ 📜 CustomButton.kt
- ┃ ┃ ┣ 📜 CustomTextField.kt
- ┃ ┃ ┗ 📜 LoadingDialog.kt
- ┃ ┣ 📂 screens
- ┃ ┃ ┣ 📂 login
- ┃ ┃ ┃ ┣ 📜 LoginScreen.kt
- ┃ ┃ ┃ ┣ 📜 LoginViewModel.kt
- ┃ ┃ ┃ ┗ 📜 LoginState.kt
- ┃ ┃ ┣ 📂 register
- ┃ ┃ ┃ ┣ 📜 RegisterScreen.kt
- ┃ ┃ ┃ ┣ 📜 RegisterViewModel.kt
- ┃ ┃ ┃ ┗ 📜 RegisterState.kt
- ┃ ┃ ┣ 📂 home
- ┃ ┃ ┃ ┗ 📜 HomeScreen.kt
- ┃ ┃ ┗ 📂 compare
- ┃ ┃   ┣ 📜 CompareScreen.kt
- ┃ ┃   ┣ 📜 CompareViewModel.kt
- ┃ ┃   ┣ 📜 CompareState.kt
- ┃ ┃   ┗ 📂 components
- ┃ ┃     ┣ 📜 MotorcycleCard.kt
- ┃ ┃     ┣ 📜 MotorcycleSelector.kt
- ┃ ┃     ┗ 📜 TechnicalSpecsCard.kt
- ┃ ┗ 📂 navigation
- ┃   ┣ 📜 NavigationGraph.kt
- ┃   ┗ 📜 Screen.kt
- ┗ 📜 MainActivity.kt
+me.proyecto.scalex/
+│
+├── 📂 data/                      → CAPA DE DATOS
+│   ├── 📂 model/                 → Modelos de datos (DTOs)
+│   ├── 📂 remote/                → Servicios API (Retrofit)
+│   └── 📂 repository/            → Repositorios (gestión de datos)
+│
+├── 📂 domain/                    → LÓGICA DE NEGOCIO (Opcional)
+│   ├── 📂 usecase/               → Casos de uso
+│   └── 📂 repository/            → Interfaces de repositorios
+│
+├── 📂 ui/                        → CAPA DE PRESENTACIÓN
+│   ├── 📂 theme/                 → Temas y colores
+│   ├── 📂 components/            → Componentes reutilizables
+│   ├── 📂 screens/               → Pantallas de la app
+│   │   ├── 📂 login/
+│   │   ├── 📂 register/
+│   │   ├── 📂 home/
+│   │   ├── 📂 compare/
+│   │   ├── 📂 favorites/
+│   │   └── 📂 searchsimilar/
+│   └── 📂 navigation/            → Navegación entre pantallas
+│
+├── 📂 util/                      → UTILIDADES
+│   ├── Constants.kt
+│   └── Extensions.kt
+│
+└── MainActivity.kt               → PUNTO DE ENTRADA
 ```
 
 ### Flujo de Datos
