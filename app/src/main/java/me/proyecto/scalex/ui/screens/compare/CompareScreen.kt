@@ -1,3 +1,5 @@
+// ui/screens/compare/CompareScreen.kt
+
 package me.proyecto.scalex.ui.screens.compare
 
 import androidx.compose.foundation.Image
@@ -35,9 +37,6 @@ import me.proyecto.scalex.ui.screens.compare.components.TechnicalSpecsCard
 import me.proyecto.scalex.ui.theme.BrightRed
 import me.proyecto.scalex.ui.theme.DarkBrown
 import me.proyecto.scalex.ui.theme.White
-import me.proyecto.scalex.ui.screens.compare.components.MotorcycleSideComparison
-import me.proyecto.scalex.ui.screens.compare.components.MotorcycleTopComparison
-import me.proyecto.scalex.ui.screens.compare.components.MotorcycleThumbnail
 
 @Composable
 fun CompareScreen(
@@ -134,11 +133,11 @@ fun CompareScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-// Visualización de comparación de tamaños
+            // Visualización de comparación de tamaños
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(400.dp)
+                    .height(450.dp)
                     .padding(horizontal = 16.dp)
                     .background(Color.Black, RoundedCornerShape(12.dp))
                     .border(2.dp, White.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
@@ -159,24 +158,24 @@ fun CompareScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            // Etiqueta
+                            // Etiqueta marca
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(BrightRed.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
                                     .border(1.dp, BrightRed, RoundedCornerShape(4.dp))
-                                    .padding(vertical = 4.dp),
+                                    .padding(vertical = 6.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = state.motorcycle1!!.make.uppercase(),
                                     color = BrightRed,
-                                    fontSize = 12.sp,
+                                    fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
                             // Imagen de la moto
                             Image(
@@ -188,13 +187,13 @@ fun CompareScreen(
                                 contentScale = ContentScale.Fit
                             )
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                            // Nombre
+                            // Nombre modelo
                             Text(
                                 text = state.motorcycle1!!.model.trim(),
                                 color = White,
-                                fontSize = 13.sp,
+                                fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center,
                                 maxLines = 2
@@ -204,6 +203,16 @@ fun CompareScreen(
                             Text(
                                 text = state.motorcycle1!!.year,
                                 color = White.copy(alpha = 0.7f),
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            // Cilindrada
+                            Text(
+                                text = state.motorcycle1!!.displacement?.substringBefore("ccm")?.trim() ?: "N/A",
+                                color = White.copy(alpha = 0.6f),
                                 fontSize = 11.sp,
                                 textAlign = TextAlign.Center
                             )
@@ -221,14 +230,14 @@ fun CompareScreen(
                                 Text(
                                     text = "MOTO 1",
                                     color = White.copy(alpha = 0.3f),
-                                    fontSize = 14.sp,
+                                    fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
                                     text = "[Sin seleccionar]",
                                     color = White.copy(alpha = 0.3f),
-                                    fontSize = 12.sp
+                                    fontSize = 13.sp
                                 )
                             }
                         }
@@ -237,26 +246,27 @@ fun CompareScreen(
                     // Divisor VS
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.padding(horizontal = 8.dp)
                     ) {
                         Box(
                             modifier = Modifier
                                 .width(2.dp)
-                                .height(150.dp)
+                                .height(160.dp)
                                 .background(White.copy(alpha = 0.3f))
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
                         Text(
                             text = "VS",
                             color = White,
-                            fontSize = 20.sp,
+                            fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
                         Box(
                             modifier = Modifier
                                 .width(2.dp)
-                                .height(150.dp)
+                                .height(160.dp)
                                 .background(White.copy(alpha = 0.3f))
                         )
                     }
@@ -270,24 +280,24 @@ fun CompareScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            // Etiqueta
+                            // Etiqueta marca
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(Color.Cyan.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
                                     .border(1.dp, Color.Cyan, RoundedCornerShape(4.dp))
-                                    .padding(vertical = 4.dp),
+                                    .padding(vertical = 6.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = state.motorcycle2!!.make.uppercase(),
                                     color = Color.Cyan,
-                                    fontSize = 12.sp,
+                                    fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
                             // Imagen de la moto
                             Image(
@@ -299,13 +309,13 @@ fun CompareScreen(
                                 contentScale = ContentScale.Fit
                             )
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                            // Nombre
+                            // Nombre modelo
                             Text(
                                 text = state.motorcycle2!!.model.trim(),
                                 color = White,
-                                fontSize = 13.sp,
+                                fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center,
                                 maxLines = 2
@@ -315,6 +325,16 @@ fun CompareScreen(
                             Text(
                                 text = state.motorcycle2!!.year,
                                 color = White.copy(alpha = 0.7f),
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            // Cilindrada
+                            Text(
+                                text = state.motorcycle2!!.displacement?.substringBefore("ccm")?.trim() ?: "N/A",
+                                color = White.copy(alpha = 0.6f),
                                 fontSize = 11.sp,
                                 textAlign = TextAlign.Center
                             )
@@ -332,14 +352,14 @@ fun CompareScreen(
                                 Text(
                                     text = "MOTO 2",
                                     color = White.copy(alpha = 0.3f),
-                                    fontSize = 14.sp,
+                                    fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
                                     text = "[Sin seleccionar]",
                                     color = White.copy(alpha = 0.3f),
-                                    fontSize = 12.sp
+                                    fontSize = 13.sp
                                 )
                             }
                         }
@@ -349,70 +369,163 @@ fun CompareScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Cards con información de las motos
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Moto 1 (Rojo)
+                MotorcycleCard(
+                    motorcycle = state.motorcycle1,
+                    color = BrightRed,
+                    colorName = "Rojo",
+                    isFavorite = state.motorcycle1?.let {
+                        it.getId() in state.favorites
+                    } ?: false,
+                    onRemove = { viewModel.onEvent(CompareEvent.RemoveMotorcycle1) },
+                    onToggleFavorite = {
+                        state.motorcycle1?.let {
+                            viewModel.onEvent(CompareEvent.ToggleFavorite(it.getId(), it))
+                        }
+                    },
+                    onShowSearch = { viewModel.onEvent(CompareEvent.ShowSelector1) },
+                    modifier = Modifier.weight(1f)
+                )
 
-            // Loading indicator
-            if (state.isLoading) {
+                // Moto 2 (Cyan)
+                MotorcycleCard(
+                    motorcycle = state.motorcycle2,
+                    color = Color.Cyan,
+                    colorName = "Azul",
+                    isFavorite = state.motorcycle2?.let {
+                        it.getId() in state.favorites
+                    } ?: false,
+                    onRemove = { viewModel.onEvent(CompareEvent.RemoveMotorcycle2) },
+                    onToggleFavorite = {
+                        state.motorcycle2?.let {
+                            viewModel.onEvent(CompareEvent.ToggleFavorite(it.getId(), it))
+                        }
+                    },
+                    onShowSearch = { viewModel.onEvent(CompareEvent.ShowSelector2) },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Tabla de especificaciones técnicas
+            if (state.motorcycle1 != null || state.motorcycle2 != null) {
+                TechnicalSpecsCard(
+                    motorcycle1 = state.motorcycle1,
+                    motorcycle2 = state.motorcycle2,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+            } else {
+                // Mensaje cuando no hay motos seleccionadas
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 40.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = DarkBrown
-                        ),
-                        shape = RoundedCornerShape(12.dp)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column(
-                            modifier = Modifier.padding(24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            CircularProgressIndicator(color = BrightRed)
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = "Buscando motocicletas...",
-                                color = White,
-                                fontSize = 14.sp
-                            )
-                        }
+                        Text(
+                            text = "🏍️",
+                            fontSize = 64.sp
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Agrega motocicletas para comparar",
+                            color = White.copy(alpha = 0.7f),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Presiona '+' para buscar y seleccionar motos",
+                            color = White.copy(alpha = 0.5f),
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
             }
 
-            // Diálogo de búsqueda para Moto 1
-            if (state.showSelector1) {
-                MotorcycleSelector(
-                    searchQuery = state.searchQuery,
-                    searchResults = state.searchResults,
-                    isLoading = state.isLoading,
-                    error = state.error,
-                    onQueryChange = { viewModel.onEvent(CompareEvent.UpdateSearchQuery(it)) },
-                    onSearch = { viewModel.onEvent(CompareEvent.SearchMotorcycles(it)) },
-                    onSelect = { viewModel.onEvent(CompareEvent.SelectMotorcycle1(it)) },
-                    onDismiss = { viewModel.onEvent(CompareEvent.HideSelector1) }
-                )
-            }
+            Spacer(modifier = Modifier.height(24.dp))
+        }
 
-            // Diálogo de búsqueda para Moto 2
-            if (state.showSelector2) {
-                MotorcycleSelector(
-                    searchQuery = state.searchQuery,
-                    searchResults = state.searchResults,
-                    isLoading = state.isLoading,
-                    error = state.error,
-                    onQueryChange = { viewModel.onEvent(CompareEvent.UpdateSearchQuery(it)) },
-                    onSearch = { viewModel.onEvent(CompareEvent.SearchMotorcycles(it)) },
-                    onSelect = { viewModel.onEvent(CompareEvent.SelectMotorcycle2(it)) },
-                    onDismiss = { viewModel.onEvent(CompareEvent.HideSelector2) }
-                )
+        // Loading indicator
+        if (state.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = DarkBrown
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator(color = BrightRed)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Buscando motocicletas...",
+                            color = White,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
             }
+        }
+
+        // Diálogo de búsqueda para Moto 1
+        if (state.showSelector1) {
+            MotorcycleSelector(
+                searchQuery = state.searchQuery,
+                searchResults = state.searchResults,
+                isLoading = state.isLoading,
+                error = state.error,
+                onQueryChange = { viewModel.onEvent(CompareEvent.UpdateSearchQuery(it)) },
+                onSearch = { viewModel.onEvent(CompareEvent.SearchMotorcycles(it)) },
+                onSelect = { viewModel.onEvent(CompareEvent.SelectMotorcycle1(it)) },
+                onDismiss = { viewModel.onEvent(CompareEvent.HideSelector1) }
+            )
+        }
+
+        // Diálogo de búsqueda para Moto 2
+        if (state.showSelector2) {
+            MotorcycleSelector(
+                searchQuery = state.searchQuery,
+                searchResults = state.searchResults,
+                isLoading = state.isLoading,
+                error = state.error,
+                onQueryChange = { viewModel.onEvent(CompareEvent.UpdateSearchQuery(it)) },
+                onSearch = { viewModel.onEvent(CompareEvent.SearchMotorcycles(it)) },
+                onSelect = { viewModel.onEvent(CompareEvent.SelectMotorcycle2(it)) },
+                onDismiss = { viewModel.onEvent(CompareEvent.HideSelector2) }
+            )
         }
     }
 }
 
+// Función para mapear imágenes de motocicletas
 private fun getMotorcycleImageResource(motorcycle: Motorcycle): Int {
     val normalizedModel = motorcycle.model.trim().lowercase()
         .replace(" ", "_")
         .replace("-", "_")
+
+    val normalizedMake = motorcycle.make.trim().lowercase()
 
     return when {
         // Suzuki
@@ -420,7 +533,6 @@ private fun getMotorcycleImageResource(motorcycle: Motorcycle): Int {
         normalizedModel.contains("gn") && normalizedModel.contains("125") -> R.drawable.suzuki_gn_125
         normalizedModel.contains("access") && normalizedModel.contains("125") -> R.drawable.access_125
         normalizedModel.contains("boulevard") && normalizedModel.contains("c50") -> R.drawable.boulevard_c50
-        normalizedModel.contains("gixxer_250_sf") -> R.drawable.gixxer_250_sf
 
         // Kawasaki
         normalizedModel.contains("concours") && normalizedModel.contains("14") -> R.drawable.concours_14
@@ -443,30 +555,22 @@ private fun getMotorcycleImageResource(motorcycle: Motorcycle): Int {
         normalizedModel.contains("pulsar") && normalizedModel.contains("150") -> R.drawable.pulsar_150
 
         // Honda
-        normalizedModel.contains("adv350") -> R.drawable.adv350
+        normalizedModel.contains("adv350") || normalizedModel.contains("adv_350") -> R.drawable.adv350
         normalizedModel.contains("africa") && normalizedModel.contains("twin") -> R.drawable.africa_twin
-        normalizedModel.contains("cb1000r") -> R.drawable.cb1000r
-        normalizedModel.contains("cb125f") -> R.drawable.cb125f
-        normalizedModel.contains("cb150f") -> R.drawable.cb150f_2022
-        normalizedModel.contains("cb200x") -> R.drawable.cb200x_2022
+        normalizedModel.contains("cb1000r") || normalizedModel.contains("cb_1000_r") -> R.drawable.cb1000r
+        normalizedModel.contains("cb125f") || normalizedModel.contains("cb_125_f") -> R.drawable.cb125f
+        normalizedModel.contains("cb150f") || normalizedModel.contains("cb_150_f") -> R.drawable.cb150f_2022
+        normalizedModel.contains("cb200x") || normalizedModel.contains("cb_200_x") -> R.drawable.cb200x_2022
 
         // BMW
-        normalizedModel.contains("c") && normalizedModel.contains("400") && normalizedModel.contains("gt") -> R.drawable.c_400_gt
-        normalizedModel.contains("f") && normalizedModel.contains("750") && normalizedModel.contains("gs") -> R.drawable.f_750_gs_2022
-        normalizedModel.contains("g") && normalizedModel.contains("310") && normalizedModel.contains("r") -> R.drawable.g_310_r_2022
-        normalizedModel.contains("k") && normalizedModel.contains("1600") && normalizedModel.contains("b") -> R.drawable.k_1600_b
-        normalizedModel.contains("m") && normalizedModel.contains("1000") && normalizedModel.contains("rr") -> R.drawable.m_1000_rr
+        normalizedModel.contains("c_400_gt") || normalizedModel.contains("c400gt") -> R.drawable.c_400_gt
+        normalizedModel.contains("f_750_gs") || normalizedModel.contains("f750gs") -> R.drawable.f_750_gs_2022
+        normalizedModel.contains("g_310_r") || normalizedModel.contains("g310r") -> R.drawable.g_310_r_2022
+        normalizedModel.contains("k_1600_b") || normalizedModel.contains("k1600b") -> R.drawable.k_1600_b
+        normalizedModel.contains("m_1000_rr") || normalizedModel.contains("m1000rr") -> R.drawable.m_1000_rr
+
 
         // Placeholder por defecto
-        else -> R.drawable.c_400_gt
+        else -> R.drawable.ct_100
     }
-}
-
-// Función auxiliar para normalizar nombres
-private fun normalizeMotorcycleName(motorcycle: Motorcycle): String {
-    return "${motorcycle.make} ${motorcycle.model}"
-        .trim()
-        .lowercase()
-        .replace(" ", "_")
-        .replace("-", "_")
 }
