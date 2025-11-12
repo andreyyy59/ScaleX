@@ -144,7 +144,7 @@ class SearchSimilarViewModel(
         base.getLengthInMm()?.let { baseLength ->
             compare.getLengthInMm()?.let { compareLength ->
                 val diff = abs(baseLength - compareLength)
-                score += (1.0 - (diff / baseLength).coerceIn(0.0, 1.0)) * 0.15
+                score += (1.0 - (diff / baseLength).coerceIn(0.0F, 1.0F)) * 0.15
                 factors++
             }
         }
@@ -152,7 +152,7 @@ class SearchSimilarViewModel(
         base.getWidthInMm()?.let { baseWidth ->
             compare.getWidthInMm()?.let { compareWidth ->
                 val diff = abs(baseWidth - compareWidth)
-                score += (1.0 - (diff / baseWidth).coerceIn(0.0, 1.0)) * 0.15
+                score += (1.0 - (diff / baseWidth).coerceIn(0.0F, 1.0F)) * 0.15
                 factors++
             }
         }
@@ -160,7 +160,7 @@ class SearchSimilarViewModel(
         base.getHeightInMm()?.let { baseHeight ->
             compare.getHeightInMm()?.let { compareHeight ->
                 val diff = abs(baseHeight - compareHeight)
-                score += (1.0 - (diff / baseHeight).coerceIn(0.0, 1.0)) * 0.10
+                score += (1.0 - (diff / baseHeight).coerceIn(0.0F, 1.0F)) * 0.10
                 factors++
             }
         }
@@ -169,7 +169,7 @@ class SearchSimilarViewModel(
         base.getWeightInKg()?.let { baseWeight ->
             compare.getWeightInKg()?.let { compareWeight ->
                 val diff = abs(baseWeight - compareWeight)
-                score += (1.0 - (diff / baseWeight).coerceIn(0.0, 1.0)) * 0.20
+                score += (1.0 - (diff / baseWeight).coerceIn(0.0F, 1.0F)) * 0.20
                 factors++
             }
         }
@@ -178,7 +178,7 @@ class SearchSimilarViewModel(
         base.getDisplacementInCC()?.let { baseDisp ->
             compare.getDisplacementInCC()?.let { compareDisp ->
                 val diff = abs(baseDisp - compareDisp)
-                score += (1.0 - (diff / baseDisp).coerceIn(0.0, 1.0)) * 0.20
+                score += (1.0 - (diff / baseDisp).coerceIn(0.0F, 1.0F)) * 0.20
                 factors++
             }
         }
@@ -187,7 +187,7 @@ class SearchSimilarViewModel(
         base.getPowerInHP()?.let { basePower ->
             compare.getPowerInHP()?.let { comparePower ->
                 val diff = abs(basePower - comparePower)
-                score += (1.0 - (diff / basePower).coerceIn(0.0, 1.0)) * 0.20
+                score += (1.0 - (diff / basePower).coerceIn(0.0F, 1.0F)) * 0.20
                 factors++
             }
         }
