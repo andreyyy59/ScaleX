@@ -28,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import me.proyecto.scalex.R
+import me.proyecto.scalex.data.model.Motorcycle
 import me.proyecto.scalex.ui.screens.compare.components.MotorcycleCard
 import me.proyecto.scalex.ui.screens.compare.components.MotorcycleSelector
 import me.proyecto.scalex.ui.screens.compare.components.TechnicalSpecsCard
@@ -133,241 +134,221 @@ fun CompareScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Espacio para visualización de tamaños - Vista LATERAL (PLACEHOLDER)
+// Visualización de comparación de tamaños
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp)
+                    .height(400.dp)
                     .padding(horizontal = 16.dp)
-                    .background(Color.DarkGray.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-                    .border(1.dp, White.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                    .background(Color.Black, RoundedCornerShape(12.dp))
+                    .border(2.dp, White.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
             ) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "VISTA LATERAL",
-                        color = White.copy(alpha = 0.7f),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp),
-                        textAlign = TextAlign.Center
-                    )
-
-                    MotorcycleSideComparison(
-                        motorcycle1 = state.motorcycle1,
-                        motorcycle2 = state.motorcycle2,
-                        color1 = BrightRed,
-                        color2 = Color.Cyan,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
-
-                    if (state.motorcycle1 != null && state.motorcycle2 != null) {
-                        Row(
+                    // Moto 1
+                    if (state.motorcycle1 != null) {
+                        Column(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 8.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
+                            // Etiqueta
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(BrightRed.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
+                                    .border(1.dp, BrightRed, RoundedCornerShape(4.dp))
+                                    .padding(vertical = 4.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = state.motorcycle1!!.make.uppercase(),
+                                    color = BrightRed,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Imagen de la moto
+                            Image(
+                                painter = painterResource(id = getMotorcycleImageResource(state.motorcycle1!!)),
+                                contentDescription = state.motorcycle1!!.getFullName(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                                contentScale = ContentScale.Fit
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Nombre
                             Text(
-                                text = state.motorcycle1!!.make,
-                                color = BrightRed,
+                                text = state.motorcycle1!!.model.trim(),
+                                color = White,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center,
+                                maxLines = 2
+                            )
+
+                            // Año
+                            Text(
+                                text = state.motorcycle1!!.year,
+                                color = White.copy(alpha = 0.7f),
                                 fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold
+                                textAlign = TextAlign.Center
                             )
-                            Text(
-                                text = " VS ",
-                                color = White.copy(alpha = 0.5f),
-                                fontSize = 11.sp
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "MOTO 1",
+                                    color = White.copy(alpha = 0.3f),
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "[Sin seleccionar]",
+                                    color = White.copy(alpha = 0.3f),
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
+                    }
+
+                    // Divisor VS
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .width(2.dp)
+                                .height(150.dp)
+                                .background(White.copy(alpha = 0.3f))
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "VS",
+                            color = White,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .width(2.dp)
+                                .height(150.dp)
+                                .background(White.copy(alpha = 0.3f))
+                        )
+                    }
+
+                    // Moto 2
+                    if (state.motorcycle2 != null) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            // Etiqueta
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Color.Cyan.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
+                                    .border(1.dp, Color.Cyan, RoundedCornerShape(4.dp))
+                                    .padding(vertical = 4.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = state.motorcycle2!!.make.uppercase(),
+                                    color = Color.Cyan,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Imagen de la moto
+                            Image(
+                                painter = painterResource(id = getMotorcycleImageResource(state.motorcycle2!!)),
+                                contentDescription = state.motorcycle2!!.getFullName(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                                contentScale = ContentScale.Fit
                             )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Nombre
                             Text(
-                                text = state.motorcycle2!!.make,
-                                color = Color.Cyan,
+                                text = state.motorcycle2!!.model.trim(),
+                                color = White,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center,
+                                maxLines = 2
+                            )
+
+                            // Año
+                            Text(
+                                text = state.motorcycle2!!.year,
+                                color = White.copy(alpha = 0.7f),
                                 fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold
+                                textAlign = TextAlign.Center
                             )
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "MOTO 2",
+                                    color = White.copy(alpha = 0.3f),
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "[Sin seleccionar]",
+                                    color = White.copy(alpha = 0.3f),
+                                    fontSize = 12.sp
+                                )
+                            }
                         }
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Vista SUPERIOR (PLACEHOLDER)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp)
-                    .padding(horizontal = 16.dp)
-                    .background(Color.DarkGray.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-                    .border(1.dp, White.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "VISTA SUPERIOR",
-                        color = White.copy(alpha = 0.7f),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp),
-                        textAlign = TextAlign.Center
-                    )
-
-                    MotorcycleTopComparison(
-                        motorcycle1 = state.motorcycle1,
-                        motorcycle2 = state.motorcycle2,
-                        color1 = BrightRed,
-                        color2 = Color.Cyan,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
-                }
-            }
-
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Cards con información de las motos
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                // Moto 1 (Rojo)
-                MotorcycleCard(
-                    motorcycle = state.motorcycle1,
-                    color = BrightRed,
-                    colorName = "Rojo",
-                    isFavorite = state.motorcycle1?.let {
-                        it.getId() in state.favorites
-                    } ?: false,
-                    onRemove = { viewModel.onEvent(CompareEvent.RemoveMotorcycle1) },
-                    onToggleFavorite = {
-                        state.motorcycle1?.let {
-                            viewModel.onEvent(CompareEvent.ToggleFavorite(it.getId(), it))
-                        }
-                    },
-                    onShowSearch = { viewModel.onEvent(CompareEvent.ShowSelector1) },
-                    modifier = Modifier.weight(1f)
-                )
-
-                // Moto 2 (Cyan)
-                MotorcycleCard(
-                    motorcycle = state.motorcycle2,
-                    color = Color.Cyan,
-                    colorName = "Azul",
-                    isFavorite = state.motorcycle2?.let {
-                        it.getId() in state.favorites
-                    } ?: false,
-                    onRemove = { viewModel.onEvent(CompareEvent.RemoveMotorcycle2) },
-                    onToggleFavorite = {
-                        state.motorcycle2?.let {
-                            viewModel.onEvent(CompareEvent.ToggleFavorite(it.getId(), it))
-                        }
-                    },
-                    onShowSearch = { viewModel.onEvent(CompareEvent.ShowSelector2) },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Thumbnails de motos
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                // Thumbnail 1
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(100.dp)
-                        .background(Color.DarkGray.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
-                        .border(2.dp, BrightRed, RoundedCornerShape(8.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    MotorcycleThumbnail(
-                        motorcycle = state.motorcycle1,
-                        color = BrightRed
-                    )
-                }
-
-                // Thumbnail 2
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(100.dp)
-                        .background(Color.DarkGray.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
-                        .border(2.dp, Color.Cyan, RoundedCornerShape(8.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    MotorcycleThumbnail(
-                        motorcycle = state.motorcycle2,
-                        color = Color.Cyan
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Tabla de especificaciones técnicas
-                if (state.motorcycle1 != null || state.motorcycle2 != null) {
-                    TechnicalSpecsCard(
-                        motorcycle1 = state.motorcycle1,
-                        motorcycle2 = state.motorcycle2,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    )
-                } else {
-                    // Mensaje cuando no hay motos seleccionadas
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 40.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "🏍️",
-                                fontSize = 64.sp
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = "Agrega motocicletas para comparar",
-                                color = White.copy(alpha = 0.7f),
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "Presiona '+' para buscar y seleccionar motos",
-                                color = White.copy(alpha = 0.5f),
-                                fontSize = 14.sp,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-            }
 
             // Loading indicator
             if (state.isLoading) {
@@ -426,4 +407,66 @@ fun CompareScreen(
             }
         }
     }
+}
+
+private fun getMotorcycleImageResource(motorcycle: Motorcycle): Int {
+    val normalizedModel = motorcycle.model.trim().lowercase()
+        .replace(" ", "_")
+        .replace("-", "_")
+
+    return when {
+        // Suzuki
+        normalizedModel.contains("gixxer") && normalizedModel.contains("250") && normalizedModel.contains("sf") -> R.drawable.gixxer_250_sf
+        normalizedModel.contains("gn") && normalizedModel.contains("125") -> R.drawable.suzuki_gn_125
+        normalizedModel.contains("access") && normalizedModel.contains("125") -> R.drawable.access_125
+        normalizedModel.contains("boulevard") && normalizedModel.contains("c50") -> R.drawable.boulevard_c50
+        normalizedModel.contains("gixxer_250_sf") -> R.drawable.gixxer_250_sf
+
+        // Kawasaki
+        normalizedModel.contains("concours") && normalizedModel.contains("14") -> R.drawable.concours_14
+        normalizedModel.contains("klr") && normalizedModel.contains("650") -> R.drawable.klr_650
+        normalizedModel.contains("klx") && normalizedModel.contains("110") -> R.drawable.klx_110r
+
+        // TVS
+        normalizedModel.contains("apache") && normalizedModel.contains("rr310") -> R.drawable.apache_rr310
+        normalizedModel.contains("apache") && normalizedModel.contains("rtr") && normalizedModel.contains("160") -> R.drawable.apache_rtr_160_2022
+        normalizedModel.contains("raider") && normalizedModel.contains("125") -> R.drawable.raider_125
+
+        // Hero
+        normalizedModel.contains("hunk") && normalizedModel.contains("150") -> R.drawable.hero_hunk_150
+        normalizedModel.contains("ct") && normalizedModel.contains("100") -> R.drawable.ct_100
+
+        // Bajaj
+        normalizedModel.contains("dominar") && normalizedModel.contains("250") -> R.drawable.dominar_250
+        normalizedModel.contains("dominar") && normalizedModel.contains("400") -> R.drawable.dominar_400
+        normalizedModel.contains("pulsar") && normalizedModel.contains("220") -> R.drawable.pulsar_220f
+        normalizedModel.contains("pulsar") && normalizedModel.contains("150") -> R.drawable.pulsar_150
+
+        // Honda
+        normalizedModel.contains("adv350") -> R.drawable.adv350
+        normalizedModel.contains("africa") && normalizedModel.contains("twin") -> R.drawable.africa_twin
+        normalizedModel.contains("cb1000r") -> R.drawable.cb1000r
+        normalizedModel.contains("cb125f") -> R.drawable.cb125f
+        normalizedModel.contains("cb150f") -> R.drawable.cb150f_2022
+        normalizedModel.contains("cb200x") -> R.drawable.cb200x_2022
+
+        // BMW
+        normalizedModel.contains("c") && normalizedModel.contains("400") && normalizedModel.contains("gt") -> R.drawable.c_400_gt
+        normalizedModel.contains("f") && normalizedModel.contains("750") && normalizedModel.contains("gs") -> R.drawable.f_750_gs_2022
+        normalizedModel.contains("g") && normalizedModel.contains("310") && normalizedModel.contains("r") -> R.drawable.g_310_r_2022
+        normalizedModel.contains("k") && normalizedModel.contains("1600") && normalizedModel.contains("b") -> R.drawable.k_1600_b
+        normalizedModel.contains("m") && normalizedModel.contains("1000") && normalizedModel.contains("rr") -> R.drawable.m_1000_rr
+
+        // Placeholder por defecto
+        else -> R.drawable.c_400_gt
+    }
+}
+
+// Función auxiliar para normalizar nombres
+private fun normalizeMotorcycleName(motorcycle: Motorcycle): String {
+    return "${motorcycle.make} ${motorcycle.model}"
+        .trim()
+        .lowercase()
+        .replace(" ", "_")
+        .replace("-", "_")
 }
