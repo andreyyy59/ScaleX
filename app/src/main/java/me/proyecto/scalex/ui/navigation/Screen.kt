@@ -6,5 +6,6 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Compare : Screen("compare")
     object Favorites : Screen("favorites")
+    object SearchSimilar : Screen("search_similar")
 }
 

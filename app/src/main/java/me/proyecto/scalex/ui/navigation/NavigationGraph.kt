@@ -10,6 +10,7 @@ import me.proyecto.scalex.ui.screens.home.HomeScreen
 import me.proyecto.scalex.ui.screens.login.LoginScreen
 import me.proyecto.scalex.ui.screens.register.RegisterScreen
 import me.proyecto.scalex.ui.screens.compare.CompareScreen
+import me.proyecto.scalex.ui.screens.searchsimilar.SearchSimilarScreen
 
 @Composable
 fun NavigationGraph(
@@ -53,19 +54,22 @@ fun NavigationGraph(
         composable(route = Screen.Home.route) {
             HomeScreen(
                 onLogout = {
-                    FirebaseAuth.getInstance().signOut()
                     navController.navigate(Screen.Login.route) {
                         popUpTo(Screen.Home.route) { inclusive = true }
                     }
                 },
                 onNavigateToCompare = {
-                    navController.navigate(Screen.Compare.route)},
+                    navController.navigate(Screen.Compare.route)
+                },
                 onNavigateToFavorites = {
                     navController.navigate(Screen.Favorites.route)
                 },
-                onNavigateToSearch = { /* TODO */ }
+                onNavigateToSearch = {
+                    navController.navigate(Screen.SearchSimilar.route)
+                }
             )
         }
+
         composable(route = Screen.Compare.route) {
             CompareScreen(
                 onNavigateBack = {
@@ -83,5 +87,17 @@ fun NavigationGraph(
                 }
             )
         }
+        composable(route = Screen.SearchSimilar.route) {
+            SearchSimilarScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToCompare = { motorcycle ->
+                    // TODO: Pasar la moto seleccionada al CompareScreen
+                    navController.navigate(Screen.Compare.route)
+                }
+            )
+        }
+
     }
 }
