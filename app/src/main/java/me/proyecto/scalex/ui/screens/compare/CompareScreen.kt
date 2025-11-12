@@ -284,7 +284,7 @@ fun CompareScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Thumbnails de motos (PLACEHOLDER)
+            // Thumbnails de motos
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
