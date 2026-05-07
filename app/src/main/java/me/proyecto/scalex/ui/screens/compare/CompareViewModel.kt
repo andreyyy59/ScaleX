@@ -1,24 +1,30 @@
 package me.proyecto.scalex.ui.screens.compare
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import me.proyecto.scalex.data.model.Motorcycle
-import me.proyecto.scalex.data.repository.FavoritesRepository
-import me.proyecto.scalex.data.repository.MotorcycleRepository
+import me.proyecto.scalex.core.Result
+import me.proyecto.scalex.domain.model.Motorcycle
+import me.proyecto.scalex.domain.usecase.AddFavoriteUseCase
+import me.proyecto.scalex.domain.usecase.GetMotorcyclesUseCase
+import javax.inject.Inject
 
-class CompareViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class CompareViewModel @Inject constructor(
+    private val getMotorcyclesUseCase: GetMotorcyclesUseCase,
+    private val addFavoriteUseCase: AddFavoriteUseCase
+) : ViewModel() {
 
-    private val motorcycleRepository = MotorcycleRepository()
-    private val favoritesRepository = FavoritesRepository.getInstance(application)
+    private val _state = MutableStateFlow<CompareUiState>(CompareUiState.Success())
+    val state: StateFlow<CompareUiState> = _state.asStateFlow()
 
-    private val _state = MutableStateFlow(CompareState())
-    val state: StateFlow<CompareState> = _state.asStateFlow()
+    private val currentState: CompareUiState.Success
+        get() = _state.value as? CompareUiState.Success ?: CompareUiState.Success()
 
     init {
         loadFavoriteIds()
@@ -31,132 +37,97 @@ class CompareViewModel(application: Application) : AndroidViewModel(application)
             }
             is CompareEvent.SelectMotorcycle1 -> {
                 _state.update {
-                    it.copy(
+                    CompareUiState.Success(
                         motorcycle1 = event.motorcycle,
                         showSelector1 = false,
                         searchResults = emptyList(),
-                        searchQuery = ""
+                        searchQuery = "",
+                        motorcycle2 = (it as? CompareUiState.Success)?.motorcycle2,
+                        favorites = (it as? CompareUiState.Success)?.favorites ?: emptySet()
                     )
                 }
             }
             is CompareEvent.SelectMotorcycle2 -> {
                 _state.update {
-                    it.copy(
+                    CompareUiState.Success(
                         motorcycle2 = event.motorcycle,
                         showSelector2 = false,
                         searchResults = emptyList(),
-                        searchQuery = ""
+                        searchQuery = "",
+                        motorcycle1 = (it as? CompareUiState.Success)?.motorcycle1,
+                        favorites = (it as? CompareUiState.Success)?.favorites ?: emptySet()
                     )
                 }
             }
             is CompareEvent.RemoveMotorcycle1 -> {
-                _state.update {
-                    it.copy(
-                        motorcycle1 = null,
-                        showSelector1 = true
-                    )
-                }
+                val s = currentState
+                _state.value = s.copy(motorcycle1 = null, showSelector1 = true)
             }
             is CompareEvent.RemoveMotorcycle2 -> {
-                _state.update {
-                    it.copy(
-                        motorcycle2 = null,
-                        showSelector2 = true
-                    )
-                }
+                val s = currentState
+                _state.value = s.copy(motorcycle2 = null, showSelector2 = true)
             }
             is CompareEvent.ToggleFavorite -> {
                 toggleFavorite(event.motorcycleId, event.motorcycle)
             }
             is CompareEvent.ShowSelector1 -> {
-                _state.update {
-                    it.copy(
-                        showSelector1 = true,
-                        searchResults = emptyList(),
-                        searchQuery = ""
-                    )
-                }
+                val s = currentState
+                _state.value = s.copy(showSelector1 = true, searchResults = emptyList(), searchQuery = "")
             }
             is CompareEvent.ShowSelector2 -> {
-                _state.update {
-                    it.copy(
-                        showSelector2 = true,
-                        searchResults = emptyList(),
-                        searchQuery = ""
-                    )
-                }
+                val s = currentState
+                _state.value = s.copy(showSelector2 = true, searchResults = emptyList(), searchQuery = "")
             }
             is CompareEvent.HideSelector1 -> {
-                _state.update {
-                    it.copy(
-                        showSelector1 = false,
-                        searchResults = emptyList(),
-                        searchQuery = ""
-                    )
-                }
+                val s = currentState
+                _state.value = s.copy(showSelector1 = false, searchResults = emptyList(), searchQuery = "")
             }
             is CompareEvent.HideSelector2 -> {
-                _state.update {
-                    it.copy(
-                        showSelector2 = false,
-                        searchResults = emptyList(),
-                        searchQuery = ""
-                    )
-                }
+                val s = currentState
+                _state.value = s.copy(showSelector2 = false, searchResults = emptyList(), searchQuery = "")
             }
             is CompareEvent.UpdateSearchQuery -> {
-                _state.update { it.copy(searchQuery = event.query) }
+                val s = currentState
+                _state.value = s.copy(searchQuery = event.query)
             }
         }
     }
 
     private fun searchMotorcycles(query: String) {
         if (query.isBlank()) {
-            _state.update { it.copy(error = "Ingresa un modelo para buscar") }
+            val s = currentState
+            _state.value = s.copy(error = "Ingresa un modelo para buscar")
             return
         }
 
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
+            _state.value = CompareUiState.Loading
 
-            val result = motorcycleRepository.searchByModel(query.trim())
-
-            result.fold(
-                onSuccess = { motorcycles ->
-                    if (motorcycles.isEmpty()) {
-                        _state.update {
-                            it.copy(
-                                searchResults = emptyList(),
-                                isLoading = false,
-                                error = "No se encontraron resultados para '$query'"
-                            )
-                        }
-                    } else {
-                        _state.update {
-                            it.copy(
-                                searchResults = motorcycles,
-                                isLoading = false,
-                                error = null
-                            )
-                        }
-                    }
-                },
-                onFailure = { exception ->
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            error = exception.message ?: "Error al buscar motocicletas"
-                        )
-                    }
+            when (val result = getMotorcyclesUseCase.byModel(query.trim())) {
+                is Result.Success -> {
+                    val motorcycles = result.data
+                    val s = currentState
+                    _state.value = s.copy(
+                        searchResults = motorcycles,
+                        isLoading = false,
+                        error = if (motorcycles.isEmpty()) "No se encontraron resultados para '$query'" else null
+                    )
                 }
-            )
+                is Result.Error -> {
+                    val s = currentState
+                    _state.value = s.copy(
+                        isLoading = false,
+                        error = result.exception.message ?: "Error al buscar motocicletas"
+                    )
+                }
+            }
         }
     }
 
     private fun toggleFavorite(motorcycleId: String, motorcycle: Motorcycle?) {
         viewModelScope.launch {
             motorcycle?.let {
-                favoritesRepository.toggleFavorite(it)
+                addFavoriteUseCase.toggle(it)
                 loadFavoriteIds()
             }
         }
@@ -164,22 +135,9 @@ class CompareViewModel(application: Application) : AndroidViewModel(application)
 
     private fun loadFavoriteIds() {
         viewModelScope.launch {
-            val favoriteIds = favoritesRepository.getFavoriteIds()
-            _state.update { it.copy(favorites = favoriteIds) }
+            val favoriteIds = addFavoriteUseCase.getIds()
+            val s = currentState
+            _state.value = s.copy(favorites = favoriteIds)
         }
     }
-}
-
-sealed class CompareEvent {
-    data class SearchMotorcycles(val query: String) : CompareEvent()
-    data class SelectMotorcycle1(val motorcycle: Motorcycle) : CompareEvent()
-    data class SelectMotorcycle2(val motorcycle: Motorcycle) : CompareEvent()
-    object RemoveMotorcycle1 : CompareEvent()
-    object RemoveMotorcycle2 : CompareEvent()
-    data class ToggleFavorite(val motorcycleId: String, val motorcycle: Motorcycle?) : CompareEvent()
-    object ShowSelector1 : CompareEvent()
-    object ShowSelector2 : CompareEvent()
-    object HideSelector1 : CompareEvent()
-    object HideSelector2 : CompareEvent()
-    data class UpdateSearchQuery(val query: String) : CompareEvent()
 }

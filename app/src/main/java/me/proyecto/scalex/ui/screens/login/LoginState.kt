@@ -1,6 +1,6 @@
 package me.proyecto.scalex.ui.screens.login
 
-data class LoginState(
+data class LoginFormState(
     val email: String = "",
     val password: String = "",
     val isLoading: Boolean = false,
@@ -9,3 +9,10 @@ data class LoginState(
     val isPasswordValid: Boolean = true,
     val isLoginSuccessful: Boolean = false
 )
+
+sealed class LoginUiState {
+    object Idle : LoginUiState()
+    object Loading : LoginUiState()
+    data class Success(val formState: LoginFormState = LoginFormState()) : LoginUiState()
+    data class Error(val message: String) : LoginUiState()
+}

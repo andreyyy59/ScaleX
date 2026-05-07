@@ -1,6 +1,6 @@
 package me.proyecto.scalex.ui.screens.register
 
-data class RegisterState(
+data class RegisterFormState(
     val email: String = "",
     val username: String = "",
     val password: String = "",

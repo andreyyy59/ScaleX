@@ -3,18 +3,25 @@ package me.proyecto.scalex.ui.screens.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.proyecto.scalex.domain.usecase.LoginUseCase
+import javax.inject.Inject
 
-class RegisterViewModel : ViewModel() {
+@HiltViewModel
+class RegisterViewModel @Inject constructor(
+    private val loginUseCase: LoginUseCase
+) : ViewModel() {
+
+    private val _state = MutableStateFlow(RegisterFormState())
+    val state: StateFlow<RegisterFormState> = _state.asStateFlow()
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-
-    private val _state = MutableStateFlow(RegisterState())
-    val state: StateFlow<RegisterState> = _state.asStateFlow()
 
     fun onEvent(event: RegisterEvent) {
         when (event) {
@@ -80,50 +87,47 @@ class RegisterViewModel : ViewModel() {
 
         if (!isEmailValid || !isUsernameValid || !isPasswordValid || !isConfirmPasswordValid) return
 
-        // 🔥 Registro real con Firebase
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
-            auth.createUserWithEmailAndPassword(currentState.email, currentState.password)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        // Opcional: actualizar el nombre de usuario
-                        val user = auth.currentUser
-                        user?.let {
-                            val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
-                                .setDisplayName(currentState.username)
-                                .build()
-                            it.updateProfile(profileUpdates)
-                        }
-
-                        _state.update {
-                            it.copy(
-                                isLoading = false,
-                                isRegisterSuccessful = true
-                            )
-                        }
-                    } else {
-                        _state.update {
-                            it.copy(
-                                isLoading = false,
-                                error = task.exception?.message ?: "Error al registrar usuario"
-                            )
+            try {
+                auth.createUserWithEmailAndPassword(currentState.email, currentState.password)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val user = auth.currentUser
+                            user?.let {
+                                val profileUpdates = UserProfileChangeRequest.Builder()
+                                    .setDisplayName(currentState.username)
+                                    .build()
+                                it.updateProfile(profileUpdates)
+                            }
+                            _state.update {
+                                it.copy(
+                                    isLoading = false,
+                                    isRegisterSuccessful = true
+                                )
+                            }
+                        } else {
+                            _state.update {
+                                it.copy(
+                                    isLoading = false,
+                                    error = task.exception?.message ?: "Error al registrar usuario"
+                                )
+                            }
                         }
                     }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Error al registrar usuario"
+                    )
                 }
+            }
         }
     }
 
     private fun validateEmail(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
-}
-
-// Eventos del registro
-sealed class RegisterEvent {
-    data class EmailChanged(val email: String) : RegisterEvent()
-    data class UsernameChanged(val username: String) : RegisterEvent()
-    data class PasswordChanged(val password: String) : RegisterEvent()
-    data class ConfirmPasswordChanged(val confirmPassword: String) : RegisterEvent()
-    object Register : RegisterEvent()
 }

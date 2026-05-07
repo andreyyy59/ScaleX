@@ -2,13 +2,16 @@ package me.proyecto.scalex.ui.screens.session
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import me.proyecto.scalex.data.repository.AuthRepository
+import me.proyecto.scalex.domain.usecase.LoginUseCase
+import javax.inject.Inject
 
-class SessionViewModel(
-    private val repository: AuthRepository = AuthRepository()
+@HiltViewModel
+class SessionViewModel @Inject constructor(
+    private val loginUseCase: LoginUseCase
 ) : ViewModel() {
 
     private val _isUserLoggedIn = MutableStateFlow<Boolean?>(null)
@@ -16,13 +19,12 @@ class SessionViewModel(
 
     fun checkSession() {
         viewModelScope.launch {
-            _isUserLoggedIn.value = repository.isUserLoggedIn()
+            _isUserLoggedIn.value = loginUseCase.isLoggedIn()
         }
     }
 
     fun logout() {
-        repository.logout()
+        loginUseCase.logout()
         _isUserLoggedIn.value = false
     }
 }
-

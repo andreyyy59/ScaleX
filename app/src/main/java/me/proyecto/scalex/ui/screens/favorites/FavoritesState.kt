@@ -1,10 +1,16 @@
 package me.proyecto.scalex.ui.screens.favorites
 
-import me.proyecto.scalex.data.model.Motorcycle
+import me.proyecto.scalex.domain.model.Motorcycle
 
-data class FavoritesState(
-    val favorites: List<Motorcycle> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null,
-    val selectedMotorcycle: Motorcycle? = null
-)
+sealed class FavoritesUiState {
+    object Loading : FavoritesUiState()
+
+    data class Success(
+        val favorites: List<Motorcycle> = emptyList(),
+        val isLoading: Boolean = false,
+        val error: String? = null,
+        val selectedMotorcycle: Motorcycle? = null
+    ) : FavoritesUiState()
+
+    data class Error(val message: String) : FavoritesUiState()
+}
