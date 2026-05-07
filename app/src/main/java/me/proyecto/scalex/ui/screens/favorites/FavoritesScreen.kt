@@ -1,5 +1,3 @@
-// ui/screens/favorites/FavoritesScreen.kt
-
 package me.proyecto.scalex.ui.screens.favorites
 
 import androidx.compose.foundation.Image
@@ -15,7 +13,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,9 +25,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.proyecto.scalex.R
-import me.proyecto.scalex.data.model.Motorcycle
+import me.proyecto.scalex.domain.model.Motorcycle
 import me.proyecto.scalex.ui.theme.BrightRed
 import me.proyecto.scalex.ui.theme.DarkBrown
 import me.proyecto.scalex.ui.theme.White
@@ -38,15 +36,20 @@ import me.proyecto.scalex.ui.theme.White
 @Composable
 fun FavoritesScreen(
     onNavigateBack: () -> Unit,
-    onAddMotorcycle: () -> Unit = {}
+    onAddMotorcycle: () -> Unit = {},
+    viewModel: FavoritesViewModel = hiltViewModel()
 ) {
-    val viewModel: FavoritesViewModel = viewModel()
-    val state by viewModel.state.collectAsState()
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
+
+    val state = when (val s = uiState) {
+        is FavoritesUiState.Loading -> FavoritesUiState.Success(isLoading = true)
+        is FavoritesUiState.Success -> s
+        is FavoritesUiState.Error -> FavoritesUiState.Success(error = s.message)
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Imagen de fondo
         Image(
             painter = painterResource(id = R.drawable.background_login),
             contentDescription = "Background",
@@ -54,7 +57,6 @@ fun FavoritesScreen(
             contentScale = ContentScale.Crop
         )
 
-        // Overlay oscuro
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -71,13 +73,11 @@ fun FavoritesScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Header con logo y botón de volver
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                // Botón de volver
                 IconButton(
                     onClick = onNavigateBack,
                     modifier = Modifier.align(Alignment.CenterStart)
@@ -90,7 +90,6 @@ fun FavoritesScreen(
                     )
                 }
 
-                // Logo
                 Image(
                     painter = painterResource(id = R.drawable.logo_scalex),
                     contentDescription = "ScaleX Logo",
@@ -102,7 +101,6 @@ fun FavoritesScreen(
                 )
             }
 
-            // Botón "AGREGUE UN VEHÍCULO"
             Button(
                 onClick = onAddMotorcycle,
                 modifier = Modifier
@@ -125,7 +123,6 @@ fun FavoritesScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Título "FAVORITOS"
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -143,7 +140,6 @@ fun FavoritesScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Grid de favoritos
             when {
                 state.isLoading -> {
                     Box(
@@ -173,7 +169,7 @@ fun FavoritesScreen(
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "😕",
+                                text = "\uD83D\uDE15",
                                 fontSize = 64.sp
                             )
                             Spacer(modifier = Modifier.height(16.dp))
@@ -205,7 +201,7 @@ fun FavoritesScreen(
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "🏍️",
+                                text = "\uD83C\uDFCD\uFE0F",
                                 fontSize = 64.sp
                             )
                             Spacer(modifier = Modifier.height(16.dp))
@@ -278,7 +274,6 @@ fun FavoriteMotorcycleCard(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Espacio para la imagen de la moto (PLACEHOLDER)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -290,7 +285,7 @@ fun FavoriteMotorcycleCard(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "🏍️",
+                            text = "\uD83C\uDFCD\uFE0F",
                             fontSize = 36.sp
                         )
                         Spacer(modifier = Modifier.height(4.dp))
@@ -304,7 +299,6 @@ fun FavoriteMotorcycleCard(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Marca
                 Text(
                     text = motorcycle.make.uppercase(),
                     color = BrightRed,
@@ -316,7 +310,6 @@ fun FavoriteMotorcycleCard(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                // Modelo
                 Text(
                     text = motorcycle.model.trim(),
                     color = White,
@@ -328,7 +321,6 @@ fun FavoriteMotorcycleCard(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                // Año
                 Text(
                     text = motorcycle.year,
                     color = White.copy(alpha = 0.7f),
@@ -337,7 +329,6 @@ fun FavoriteMotorcycleCard(
                 )
             }
 
-            // Botón de eliminar (X)
             IconButton(
                 onClick = onRemove,
                 modifier = Modifier

@@ -14,7 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import me.proyecto.scalex.data.model.Motorcycle
+import me.proyecto.scalex.domain.model.Motorcycle
 import me.proyecto.scalex.ui.theme.BrightRed
 import me.proyecto.scalex.ui.theme.DarkBrown
 import me.proyecto.scalex.ui.theme.White
@@ -44,7 +44,6 @@ fun MotorcycleSelector(
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Campo de búsqueda
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = onQueryChange,
@@ -72,7 +71,6 @@ fun MotorcycleSelector(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Contenido según estado
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -114,7 +112,6 @@ fun MotorcycleSelector(
                             }
                         }
                         else -> {
-                            // Lista de resultados
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()

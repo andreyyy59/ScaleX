@@ -8,16 +8,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
-import com.google.android.ads.mediationtestsuite.viewmodels.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import me.proyecto.scalex.ui.navigation.NavigationGraph
 import me.proyecto.scalex.ui.screens.session.SessionViewModel
 import me.proyecto.scalex.ui.theme.ScaleXTheme
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,16 +30,13 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    val sessionViewModel: SessionViewModel = viewModel()
-                    val isUserLoggedIn by sessionViewModel.isUserLoggedIn.collectAsState()
+                    val sessionViewModel: SessionViewModel = hiltViewModel()
+                    val isUserLoggedIn by sessionViewModel.isUserLoggedIn.collectAsStateWithLifecycle()
 
                     LaunchedEffect(Unit) {
                         sessionViewModel.checkSession()
                     }
 
-                    // Configurar ViewModelFactory para inyección de dependencias
-                    val viewModelFactory = ViewModelFactory()
-                    // Espera a que se verifique la sesión antes de cargar la navegación
                     if (isUserLoggedIn != null) {
                         NavigationGraph(
                             navController = navController,

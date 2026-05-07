@@ -11,24 +11,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.proyecto.scalex.R
-import me.proyecto.scalex.data.model.Motorcycle
+import me.proyecto.scalex.domain.model.Motorcycle
 import me.proyecto.scalex.ui.screens.compare.components.MotorcycleCard
 import me.proyecto.scalex.ui.screens.compare.components.MotorcycleSelector
 import me.proyecto.scalex.ui.screens.compare.components.TechnicalSpecsCard
@@ -38,24 +35,20 @@ import me.proyecto.scalex.ui.theme.White
 
 @Composable
 fun CompareScreen(
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    viewModel: CompareViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
 
-    val viewModel: CompareViewModel = viewModel(
-        factory = viewModelFactory {
-            initializer {
-                CompareViewModel(context.applicationContext as android.app.Application)
-            }
-        }
-    )
-
-    val state by viewModel.state.collectAsState()
+    val state = when (val s = uiState) {
+        is CompareUiState.Loading -> CompareUiState.Success(isLoading = true)
+        is CompareUiState.Success -> s
+        is CompareUiState.Error -> CompareUiState.Success(error = s.message)
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Imagen de fondo
         Image(
             painter = painterResource(id = R.drawable.background_login),
             contentDescription = "Background",
@@ -63,7 +56,6 @@ fun CompareScreen(
             contentScale = ContentScale.Crop
         )
 
-        // Overlay oscuro
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -82,13 +74,11 @@ fun CompareScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            // Header con logo y botón de volver
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                // Botón de volver
                 IconButton(
                     onClick = onNavigateBack,
                     modifier = Modifier.align(Alignment.CenterStart)
@@ -101,7 +91,6 @@ fun CompareScreen(
                     )
                 }
 
-                // Logo
                 Image(
                     painter = painterResource(id = R.drawable.logo_scalex),
                     contentDescription = "ScaleX Logo",
@@ -113,7 +102,6 @@ fun CompareScreen(
                 )
             }
 
-            // Título "PRUEBA LA MOTOCICLETA A COMPARAR"
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -131,7 +119,6 @@ fun CompareScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Visualización de comparación de tamaños
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -147,7 +134,6 @@ fun CompareScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Moto 1
                     if (state.motorcycle1 != null) {
                         Column(
                             modifier = Modifier
@@ -156,7 +142,6 @@ fun CompareScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            // Etiqueta marca
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -175,7 +160,6 @@ fun CompareScreen(
 
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            // Imagen de la moto
                             Image(
                                 painter = painterResource(id = getMotorcycleImageResource(state.motorcycle1!!)),
                                 contentDescription = state.motorcycle1!!.getFullName(),
@@ -187,7 +171,6 @@ fun CompareScreen(
 
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            // Nombre modelo
                             Text(
                                 text = state.motorcycle1!!.model.trim(),
                                 color = White,
@@ -197,7 +180,6 @@ fun CompareScreen(
                                 maxLines = 2
                             )
 
-                            // Año
                             Text(
                                 text = state.motorcycle1!!.year,
                                 color = White.copy(alpha = 0.7f),
@@ -207,7 +189,6 @@ fun CompareScreen(
 
                             Spacer(modifier = Modifier.height(4.dp))
 
-                            // Cilindrada
                             Text(
                                 text = state.motorcycle1!!.displacement?.substringBefore("ccm")?.trim() ?: "N/A",
                                 color = White.copy(alpha = 0.6f),
@@ -241,7 +222,6 @@ fun CompareScreen(
                         }
                     }
 
-                    // Divisor VS
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
@@ -269,7 +249,6 @@ fun CompareScreen(
                         )
                     }
 
-                    // Moto 2
                     if (state.motorcycle2 != null) {
                         Column(
                             modifier = Modifier
@@ -278,7 +257,6 @@ fun CompareScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            // Etiqueta marca
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -297,7 +275,6 @@ fun CompareScreen(
 
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            // Imagen de la moto
                             Image(
                                 painter = painterResource(id = getMotorcycleImageResource(state.motorcycle2!!)),
                                 contentDescription = state.motorcycle2!!.getFullName(),
@@ -309,7 +286,6 @@ fun CompareScreen(
 
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            // Nombre modelo
                             Text(
                                 text = state.motorcycle2!!.model.trim(),
                                 color = White,
@@ -319,7 +295,6 @@ fun CompareScreen(
                                 maxLines = 2
                             )
 
-                            // Año
                             Text(
                                 text = state.motorcycle2!!.year,
                                 color = White.copy(alpha = 0.7f),
@@ -329,7 +304,6 @@ fun CompareScreen(
 
                             Spacer(modifier = Modifier.height(4.dp))
 
-                            // Cilindrada
                             Text(
                                 text = state.motorcycle2!!.displacement?.substringBefore("ccm")?.trim() ?: "N/A",
                                 color = White.copy(alpha = 0.6f),
@@ -367,14 +341,12 @@ fun CompareScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Cards con información de las motos
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Moto 1 (Rojo)
                 MotorcycleCard(
                     motorcycle = state.motorcycle1,
                     color = BrightRed,
@@ -392,7 +364,6 @@ fun CompareScreen(
                     modifier = Modifier.weight(1f)
                 )
 
-                // Moto 2 (Cyan)
                 MotorcycleCard(
                     motorcycle = state.motorcycle2,
                     color = Color.Cyan,
@@ -413,7 +384,6 @@ fun CompareScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Tabla de especificaciones técnicas
             if (state.motorcycle1 != null || state.motorcycle2 != null) {
                 TechnicalSpecsCard(
                     motorcycle1 = state.motorcycle1,
@@ -423,7 +393,6 @@ fun CompareScreen(
                         .padding(horizontal = 16.dp)
                 )
             } else {
-                // Mensaje cuando no hay motos seleccionadas
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -434,7 +403,7 @@ fun CompareScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "🏍️",
+                            text = "\uD83C\uDFCD\uFE0F",
                             fontSize = 64.sp
                         )
                         Spacer(modifier = Modifier.height(16.dp))
@@ -459,7 +428,6 @@ fun CompareScreen(
             Spacer(modifier = Modifier.height(24.dp))
         }
 
-        // Loading indicator
         if (state.isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -487,7 +455,6 @@ fun CompareScreen(
             }
         }
 
-        // Diálogo de búsqueda para Moto 1
         if (state.showSelector1) {
             MotorcycleSelector(
                 searchQuery = state.searchQuery,
@@ -501,7 +468,6 @@ fun CompareScreen(
             )
         }
 
-        // Diálogo de búsqueda para Moto 2
         if (state.showSelector2) {
             MotorcycleSelector(
                 searchQuery = state.searchQuery,
@@ -517,7 +483,6 @@ fun CompareScreen(
     }
 }
 
-// Función para mapear imágenes de motocicletas
 private fun getMotorcycleImageResource(motorcycle: Motorcycle): Int {
     val normalizedModel = motorcycle.model.trim().lowercase()
         .replace(" ", "_")
@@ -526,49 +491,33 @@ private fun getMotorcycleImageResource(motorcycle: Motorcycle): Int {
     val normalizedMake = motorcycle.make.trim().lowercase()
 
     return when {
-        // Suzuki
         normalizedModel.contains("gixxer") && normalizedModel.contains("250") && normalizedModel.contains("sf") -> R.drawable.gixxer_250_sf
         normalizedModel.contains("gn") && normalizedModel.contains("125") -> R.drawable.suzuki_gn_125
         normalizedModel.contains("access") && normalizedModel.contains("125") -> R.drawable.access_125
         normalizedModel.contains("boulevard") && normalizedModel.contains("c50") -> R.drawable.boulevard_c50
-
-        // Kawasaki
         normalizedModel.contains("concours") && normalizedModel.contains("14") -> R.drawable.concours_14
         normalizedModel.contains("klr") && normalizedModel.contains("650") -> R.drawable.klr_650
         normalizedModel.contains("klx") && normalizedModel.contains("110") -> R.drawable.klx_110r
-
-        // TVS
         normalizedModel.contains("apache") && normalizedModel.contains("rr310") -> R.drawable.apache_rr310
         normalizedModel.contains("apache") && normalizedModel.contains("rtr") && normalizedModel.contains("160") -> R.drawable.apache_rtr_160_2022
         normalizedModel.contains("raider") && normalizedModel.contains("125") -> R.drawable.raider_125
-
-        // Hero
         normalizedModel.contains("hunk") && normalizedModel.contains("150") -> R.drawable.hero_hunk_150
         normalizedModel.contains("ct") && normalizedModel.contains("100") -> R.drawable.ct_100
-
-        // Bajaj
         normalizedModel.contains("dominar") && normalizedModel.contains("250") -> R.drawable.dominar_250
         normalizedModel.contains("dominar") && normalizedModel.contains("400") -> R.drawable.dominar_400
         normalizedModel.contains("pulsar") && normalizedModel.contains("220") -> R.drawable.pulsar_220f
         normalizedModel.contains("pulsar") && normalizedModel.contains("150") -> R.drawable.pulsar_150
-
-        // Honda
         normalizedModel.contains("adv350") || normalizedModel.contains("adv_350") -> R.drawable.adv350
         normalizedModel.contains("africa") && normalizedModel.contains("twin") -> R.drawable.africa_twin
         normalizedModel.contains("cb1000r") || normalizedModel.contains("cb_1000_r") -> R.drawable.cb1000r
         normalizedModel.contains("cb125f") || normalizedModel.contains("cb_125_f") -> R.drawable.cb125f
         normalizedModel.contains("cb150f") || normalizedModel.contains("cb_150_f") -> R.drawable.cb150f_2022
         normalizedModel.contains("cb200x") || normalizedModel.contains("cb_200_x") -> R.drawable.cb200x_2022
-
-        // BMW
         normalizedModel.contains("c_400_gt") || normalizedModel.contains("c400gt") -> R.drawable.c_400_gt
         normalizedModel.contains("f_750_gs") || normalizedModel.contains("f750gs") -> R.drawable.f_750_gs_2022
         normalizedModel.contains("g_310_r") || normalizedModel.contains("g310r") -> R.drawable.g_310_r_2022
         normalizedModel.contains("k_1600_b") || normalizedModel.contains("k1600b") -> R.drawable.k_1600_b
         normalizedModel.contains("m_1000_rr") || normalizedModel.contains("m1000rr") -> R.drawable.m_1000_rr
-
-
-        // Placeholder por defecto
         else -> R.drawable.ct_100
     }
 }

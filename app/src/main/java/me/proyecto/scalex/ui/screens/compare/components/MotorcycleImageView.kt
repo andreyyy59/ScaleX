@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.proyecto.scalex.R
-import me.proyecto.scalex.data.model.Motorcycle
+import me.proyecto.scalex.domain.model.Motorcycle
 
 @Composable
 fun MotorcycleSideComparison(

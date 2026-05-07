@@ -17,7 +17,6 @@ fun NavigationGraph(
     navController: NavHostController,
     startDestination: String
 ) {
-    //Verifica si el usuario ya está autenticado
     val user = FirebaseAuth.getInstance().currentUser
     val start = if (user != null) Screen.Home.route else Screen.Login.route
 
@@ -93,11 +92,9 @@ fun NavigationGraph(
                     navController.popBackStack()
                 },
                 onNavigateToCompare = { motorcycle ->
-                    // TODO: Pasar la moto seleccionada al CompareScreen
                     navController.navigate(Screen.Compare.route)
                 }
             )
         }
-
     }
 }

@@ -1,10 +1,8 @@
 package me.proyecto.scalex.ui.screens.searchsimilar
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,7 +12,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,9 +24,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.proyecto.scalex.R
-import me.proyecto.scalex.data.model.Motorcycle
+import me.proyecto.scalex.domain.model.Motorcycle
 import me.proyecto.scalex.ui.screens.compare.components.MotorcycleSelector
 import me.proyecto.scalex.ui.theme.BrightRed
 import me.proyecto.scalex.ui.theme.DarkBrown
@@ -38,15 +36,21 @@ import me.proyecto.scalex.ui.theme.White
 @Composable
 fun SearchSimilarScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToCompare: (Motorcycle) -> Unit = {}
+    onNavigateToCompare: (Motorcycle) -> Unit = {},
+    viewModel: SearchSimilarViewModel = hiltViewModel()
 ) {
-    val viewModel: SearchSimilarViewModel = viewModel()
-    val state by viewModel.state.collectAsState()
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
+
+    val state = when (val s = uiState) {
+        is SearchSimilarUiState.Idle -> SearchSimilarUiState.Success()
+        is SearchSimilarUiState.Loading -> SearchSimilarUiState.Success(isLoading = true)
+        is SearchSimilarUiState.Success -> s
+        is SearchSimilarUiState.Error -> SearchSimilarUiState.Success(error = s.message)
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Imagen de fondo
         Image(
             painter = painterResource(id = R.drawable.background_login),
             contentDescription = "Background",
@@ -54,7 +58,6 @@ fun SearchSimilarScreen(
             contentScale = ContentScale.Crop
         )
 
-        // Overlay oscuro
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -71,7 +74,6 @@ fun SearchSimilarScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Header
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -100,7 +102,6 @@ fun SearchSimilarScreen(
                 )
             }
 
-            // Título
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -122,7 +123,6 @@ fun SearchSimilarScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botón de búsqueda
             if (state.selectedMotorcycle == null) {
                 Button(
                     onClick = { viewModel.onEvent(SearchSimilarEvent.ShowSelector) },
@@ -150,7 +150,6 @@ fun SearchSimilarScreen(
                     )
                 }
             } else {
-                // Mostrar moto seleccionada
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -200,7 +199,6 @@ fun SearchSimilarScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Lista de motos similares
             when {
                 state.isLoading -> {
                     Box(
@@ -232,7 +230,7 @@ fun SearchSimilarScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "🔍",
+                                text = "\uD83D\uDD0D",
                                 fontSize = 64.sp
                             )
                             Spacer(modifier = Modifier.height(16.dp))
@@ -297,7 +295,7 @@ fun SearchSimilarScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "🏍",
+                                text = "\uD83C\uDFCD",
                                 fontSize = 64.sp
                             )
                             Spacer(modifier = Modifier.height(16.dp))
@@ -313,7 +311,6 @@ fun SearchSimilarScreen(
             }
         }
 
-        // Diálogo de búsqueda
         if (state.showSelector) {
             MotorcycleSelector(
                 searchQuery = state.searchQuery,
@@ -351,14 +348,13 @@ fun SimilarMotorcycleCard(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Thumbnail placeholder
             Box(
                 modifier = Modifier
                     .size(60.dp)
                     .background(Color.DarkGray.copy(alpha = 0.3f), RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "🏍", fontSize = 28.sp)
+                Text(text = "\uD83C\uDFCD", fontSize = 28.sp)
             }
 
             Spacer(modifier = Modifier.width(12.dp))

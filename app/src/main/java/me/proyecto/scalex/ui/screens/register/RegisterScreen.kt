@@ -1,4 +1,4 @@
-    package me.proyecto.scalex.ui.screens.register
+package me.proyecto.scalex.ui.screens.register
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,21 +24,21 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.proyecto.scalex.R
 import me.proyecto.scalex.ui.components.CustomButton
 import me.proyecto.scalex.ui.components.CustomTextField
 import me.proyecto.scalex.ui.theme.BrightRed
-import me.proyecto.scalex.ui.theme.DarkBrown
 import me.proyecto.scalex.ui.theme.White
 
 @Composable
 fun RegisterScreen(
     onRegisterSuccess: () -> Unit,
-    onNavigateToLogin: () -> Unit = {}
+    onNavigateToLogin: () -> Unit = {},
+    viewModel: RegisterViewModel = hiltViewModel()
 ) {
-    val viewModel: RegisterViewModel = viewModel()
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(state.isRegisterSuccessful) {
         if (state.isRegisterSuccessful) {
@@ -50,7 +49,6 @@ fun RegisterScreen(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Imagen de fondo
         Image(
             painter = painterResource(id = R.drawable.background_login),
             contentDescription = "Background",
@@ -58,7 +56,6 @@ fun RegisterScreen(
             contentScale = ContentScale.Crop
         )
 
-        // Overlay oscuro
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -72,7 +69,6 @@ fun RegisterScreen(
                 )
         )
 
-        // Contenido
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -82,7 +78,6 @@ fun RegisterScreen(
         ) {
             Spacer(modifier = Modifier.height(40.dp))
 
-            // Logo
             Image(
                 painter = painterResource(id = R.drawable.logo_scalex),
                 contentDescription = "ScaleX Logo",
@@ -94,20 +89,17 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            // Título "REGISTRO"
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color(0xFF3B0D0D))
                     .drawBehind {
-                        // Línea superior
                         drawLine(
                             color = Color.White,
                             start = Offset(0f, 0f),
                             end = Offset(size.width, 0f),
                             strokeWidth = 4f
                         )
-                        // Línea inferior
                         drawLine(
                             color = Color.White,
                             start = Offset(0f, size.height),
@@ -129,7 +121,6 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Campo de Email
             CustomTextField(
                 value = state.email,
                 onValueChange = { viewModel.onEvent(RegisterEvent.EmailChanged(it)) },
@@ -142,7 +133,6 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Campo de Nombre de Usuario
             CustomTextField(
                 value = state.username,
                 onValueChange = { viewModel.onEvent(RegisterEvent.UsernameChanged(it)) },
@@ -155,28 +145,26 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Campo de Contraseña
             CustomTextField(
                 value = state.password,
                 onValueChange = { viewModel.onEvent(RegisterEvent.PasswordChanged(it)) },
-                label = "CONTRASEÑA",
+                label = "CONTRASE\u00D1A",
                 isPassword = true,
                 isError = !state.isPasswordValid && state.password.isNotEmpty(),
-                errorMessage = "La contraseña debe tener al menos 6 caracteres",
+                errorMessage = "La contrase\u00F1a debe tener al menos 6 caracteres",
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Next
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Campo de Confirmar Contraseña
             CustomTextField(
                 value = state.confirmPassword,
                 onValueChange = { viewModel.onEvent(RegisterEvent.ConfirmPasswordChanged(it)) },
-                label = "CONFIRMAR CONTRASEÑA",
+                label = "CONFIRMAR CONTRASE\u00D1A",
                 isPassword = true,
                 isError = !state.isConfirmPasswordValid && state.confirmPassword.isNotEmpty(),
-                errorMessage = "Las contraseñas no coinciden",
+                errorMessage = "Las contrase\u00F1as no coinciden",
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done,
                 onImeAction = { viewModel.onEvent(RegisterEvent.Register) }
@@ -184,14 +172,12 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Botón de Registro
             CustomButton(
                 text = "REGISTRARSE",
                 onClick = { viewModel.onEvent(RegisterEvent.Register) },
                 enabled = !state.isLoading
             )
 
-            // Indicador de carga
             if (state.isLoading) {
                 Spacer(modifier = Modifier.height(20.dp))
                 CircularProgressIndicator(
@@ -200,7 +186,6 @@ fun RegisterScreen(
                 )
             }
 
-            // Mensaje de error
             state.error?.let { error ->
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
@@ -212,12 +197,11 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Botón para volver al login
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "¿Ya tienes cuenta?",
+                    text = "\u00BFYa tienes cuenta?",
                     color = White.copy(alpha = 0.7f),
                     fontSize = 14.sp
                 )
@@ -225,7 +209,7 @@ fun RegisterScreen(
                     onClick = onNavigateToLogin
                 ) {
                     Text(
-                        text = "Inicia Sesión",
+                        text = "Inicia Sesi\u00F3n",
                         color = BrightRed,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
