@@ -14,3 +14,12 @@ sealed class FavoritesUiState {
 
     data class Error(val message: String) : FavoritesUiState()
 }
+
+sealed interface FavoritesEvent {
+    data class RemoveFavorite(val motorcycleId: String) : FavoritesEvent
+    data class SelectMotorcycle(val motorcycle: Motorcycle) : FavoritesEvent
+    object DeselectMotorcycle : FavoritesEvent
+    object AddToComparison : FavoritesEvent
+    object Refresh : FavoritesEvent
+    object ClearAll : FavoritesEvent
+}

@@ -19,3 +19,17 @@ sealed class CompareUiState {
 
     data class Error(val message: String) : CompareUiState()
 }
+
+sealed interface CompareEvent {
+    data class SearchMotorcycles(val query: String) : CompareEvent
+    data class SelectMotorcycle1(val motorcycle: Motorcycle) : CompareEvent
+    data class SelectMotorcycle2(val motorcycle: Motorcycle) : CompareEvent
+    object RemoveMotorcycle1 : CompareEvent
+    object RemoveMotorcycle2 : CompareEvent
+    data class ToggleFavorite(val motorcycleId: String, val motorcycle: Motorcycle?) : CompareEvent
+    object ShowSelector1 : CompareEvent
+    object ShowSelector2 : CompareEvent
+    object HideSelector1 : CompareEvent
+    object HideSelector2 : CompareEvent
+    data class UpdateSearchQuery(val query: String) : CompareEvent
+}

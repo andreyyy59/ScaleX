@@ -13,3 +13,12 @@ data class RegisterFormState(
     val isConfirmPasswordValid: Boolean = true,
     val isRegisterSuccessful: Boolean = false
 )
+
+sealed interface RegisterEvent {
+    data class EmailChanged(val email: String) : RegisterEvent
+    data class UsernameChanged(val username: String) : RegisterEvent
+    data class PasswordChanged(val password: String) : RegisterEvent
+    data class ConfirmPasswordChanged(val confirmPassword: String) : RegisterEvent
+    object Register : RegisterEvent
+}
+

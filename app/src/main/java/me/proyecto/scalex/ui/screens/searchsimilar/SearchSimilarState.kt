@@ -18,3 +18,12 @@ sealed class SearchSimilarUiState {
 
     data class Error(val message: String) : SearchSimilarUiState()
 }
+
+sealed interface SearchSimilarEvent {
+    data class SearchMotorcycles(val query: String) : SearchSimilarEvent
+    data class SelectMotorcycle(val motorcycle: Motorcycle) : SearchSimilarEvent
+    data class UpdateSearchQuery(val query: String) : SearchSimilarEvent
+    object ShowSelector : SearchSimilarEvent
+    object HideSelector : SearchSimilarEvent
+    object ClearSelection : SearchSimilarEvent
+}

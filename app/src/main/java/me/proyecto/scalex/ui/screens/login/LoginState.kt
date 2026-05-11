@@ -16,3 +16,9 @@ sealed class LoginUiState {
     data class Success(val formState: LoginFormState = LoginFormState()) : LoginUiState()
     data class Error(val message: String) : LoginUiState()
 }
+
+sealed interface LoginEvent {
+    data class EmailChanged(val email: String) : LoginEvent
+    data class PasswordChanged(val password: String) : LoginEvent
+    object Login : LoginEvent
+}
