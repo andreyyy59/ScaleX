@@ -95,13 +95,15 @@ class CompareViewModel @Inject constructor(
 
     private fun searchMotorcycles(query: String) {
         if (query.isBlank()) {
-            val s = currentState
-            _state.value = s.copy(error = "Ingresa un modelo para buscar")
+            _state.update { s ->
+                (s as? CompareUiState.Success)?.copy(error = "Ingresa un modelo para buscar") ?: s
+            }
             return
         }
 
         viewModelScope.launch {
-            _state.value = CompareUiState.Loading
+            val current = currentState
+            _state.value = current.copy(isLoading = true, error = null)
 
             when (val result = getMotorcyclesUseCase.byModel(query.trim())) {
                 is Result.Success -> {

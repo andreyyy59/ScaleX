@@ -54,13 +54,15 @@ class SearchSimilarViewModel @Inject constructor(
 
     private fun searchMotorcycles(query: String) {
         if (query.isBlank()) {
-            val s = currentState
-            _state.value = s.copy(error = "Ingresa un modelo para buscar")
+            _state.update { s ->
+                (s as? SearchSimilarUiState.Success)?.copy(error = "Ingresa un modelo para buscar") ?: s
+            }
             return
         }
 
         viewModelScope.launch {
-            _state.value = SearchSimilarUiState.Loading
+            val current = currentState
+            _state.value = current.copy(isLoading = true, error = null)
 
             when (val result = getMotorcyclesUseCase.byModel(query.trim())) {
                 is Result.Success -> {
@@ -96,7 +98,8 @@ class SearchSimilarViewModel @Inject constructor(
 
     private fun findSimilarMotorcycles(motorcycle: Motorcycle) {
         viewModelScope.launch {
-            _state.value = SearchSimilarUiState.Loading
+            val current = currentState
+            _state.value = current.copy(isLoading = true, error = null)
 
             try {
                 val makes = listOf("Kawasaki", "Yamaha", "Honda", "Suzuki", "KTM", "Ducati", "BMW")
