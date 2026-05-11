@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -8,11 +10,11 @@ plugins {
 }
 
 fun getApiKey(): String {
-    val localProperties = java.util.Properties()
+    val localProperties = Properties() // Usamos la clase importada
     val localPropertiesFile = rootProject.file("local.properties")
     if (localPropertiesFile.exists()) {
         localPropertiesFile.inputStream().use { stream ->
-            localProperties.load(stream)
+            localProperties.load(stream) // 2. Corregido: de 'strseam' a 'stream'
         }
     }
     return localProperties.getProperty("API_NINJAS_KEY") ?: ""
@@ -43,13 +45,16 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
         buildConfig = true
@@ -57,7 +62,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -82,8 +86,6 @@ dependencies {
 
     //Firebase
     implementation(libs.firebase.bom)
-
-    //Auth
     implementation(libs.firebase.auth)
 
     // Retrofit para API
@@ -100,7 +102,7 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
 
-    //Iconos
+    // Iconos
     implementation(libs.androidx.material.icons.extended)
 
     implementation(libs.play.services.ads)
